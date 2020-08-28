@@ -1,0 +1,5 @@
+cloud:
+  aws:
+    credentials:
+      accessKey: 엑세스키
+      secretKey: 시크릿

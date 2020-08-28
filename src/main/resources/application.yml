@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: local
+    include: aws
+
+# logging 설정
+logging:
+  level:
+    root: INFO
+    sql: debug # org.hibernate.SQL은 logger를 통해 하이버네이트 실행 SQL을 남긴다.
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+  pattern:
+    file: "%d{dd-MM-yyyy HH:mm:ss.SSS,Asia/Seoul} [%thread] %-5level %logger{36}.%M - %msg%n"
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS,Asia/Seoul} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"

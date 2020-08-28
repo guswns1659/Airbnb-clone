@@ -1,0 +1,35 @@
+spring:
+  profiles: local
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/airbnb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    username: jack
+    password: 1234
+    #    initialization-mode: always
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+        lob:
+        non_contextual_creation: true
+    hibernate:
+      use-new-id-generator-mappings: false
+      ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+---
+cloud:
+  aws:
+    s3:
+      bucket: s3-angelhack
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

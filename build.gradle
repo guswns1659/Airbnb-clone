@@ -1,0 +1,44 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+}
+
+archivesBaseName = 'action_codedeploy'
+group = 'me.titatic'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/libs-milestone' }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws'
+    implementation 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
+    implementation 'mysql:mysql-connector-java'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.4.17.Final'
+    // 쿼리 파라미터를 로그로 남기는 외부라이브러리. 개발 단계에서는 사용해도 좋으나 운영할 땐 성능을 고려해야 한다.
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-aws:2.2.1.RELEASE'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
