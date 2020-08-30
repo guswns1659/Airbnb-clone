@@ -1,5 +1,8 @@
 package com.titanic.airbnbclone.service;
 
+import com.titanic.airbnbclone.domain.account.Account;
+import com.titanic.airbnbclone.domain.account.Member;
+import com.titanic.airbnbclone.repository.AccountRepository;
 import com.titanic.airbnbclone.utils.GithubProperties;
 import com.titanic.airbnbclone.web.dto.request.AccessTokenRequestDto;
 import com.titanic.airbnbclone.web.dto.response.GithubEmailResponseDto;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -19,12 +23,15 @@ public class LoginService {
 
     private final GithubProperties githubProperties;
     private WebClient webClient;
+    private final AccountRepository accountRepository;
 
-    public LoginService(GithubProperties githubProperties) {
+    public LoginService(GithubProperties githubProperties, AccountRepository accountRepository) {
         this.githubProperties = githubProperties;
+        this.accountRepository = accountRepository;
         this.webClient = WebClient.create();
     }
 
+    @Transactional
     public ResponseEntity<Void> login(String redirectCode,
                                       HttpServletResponse response) {
 
@@ -57,11 +64,18 @@ public class LoginService {
                     .log()
                     .block();
 
-            log.info("userEmailInfo2 : {}", githubEmail[0].getEmail());
+            String email = githubEmail[0].getEmail();
 
             // 사용자 저장소에 persist
+            Account member = Member.builder()
+                    .email(email)
+                    .build();
+
+            accountRepository.save(member);
 
             // 사용자 email로 jwt 토큰을 만든 뒤 쿠키로 response에 넣어서 리턴.
+
+            addCookieToResponseServlet(response, email);
 
             return new ResponseEntity<>(HttpStatus.FOUND);
 
@@ -69,6 +83,12 @@ public class LoginService {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    private void addCookieToResponseServlet(HttpServletResponse response, String email) {
+
+//        String jwtToken = JwtUtils.jwt
+
     }
 
     private String parseRawAccessToken(String rawAccessToken) {

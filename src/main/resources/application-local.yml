@@ -5,7 +5,7 @@ spring:
     url: jdbc:mysql://localhost:3306/airbnb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useLegacyDatetimeCode=false
     username: jack
     password: 1234
-    #    initialization-mode: always
+#    initialization-mode: always
     hikari:
       maximum-pool-size: 10
   jpa:

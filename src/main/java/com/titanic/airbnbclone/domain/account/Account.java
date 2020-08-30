@@ -1,15 +1,18 @@
 package com.titanic.airbnbclone.domain.account;
 
 import com.titanic.airbnbclone.domain.Reservation;
-import org.springframework.context.annotation.Configuration;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
+@NoArgsConstructor
+@Getter
 public abstract class Account {
 
     @Id
@@ -22,4 +25,7 @@ public abstract class Account {
     @OneToMany(mappedBy = "account")
     private List<Reservation> reservations = new ArrayList<>();
 
+    public Account(String email) {
+        this.email = email;
+    }
 }
