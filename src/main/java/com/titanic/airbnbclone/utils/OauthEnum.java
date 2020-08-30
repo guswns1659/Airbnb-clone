@@ -10,7 +10,8 @@ public enum OauthEnum {
     AUTHORIZATION("Authorization"),
     OAUTH_URL_SERVER("https://github.com/login/oauth/authorize?client_id=bdd909bfff2137535182&redirect_uri=http://localhost:8080/callback&scope=user"),
     SECRET_KEY("airbnbClone"),
-    TYP("typ"), TYP_VALUE("JWT"), ALG("HS256"), TOKEN("token");
+    TYP("typ"), TYP_VALUE("JWT"), ALG("HS256"), TOKEN("token"),
+    OPTIONS("OPTIONS");
 
     private String value;
 

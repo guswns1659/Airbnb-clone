@@ -34,7 +34,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String parseJwt(String jwtToken) {
+    public static String parseJwt(String jwtToken) {
         return Jwts.parser()
                 .setSigningKey(OauthEnum.SECRET_KEY.getValue())
                 .parseClaimsJws(jwtToken)
