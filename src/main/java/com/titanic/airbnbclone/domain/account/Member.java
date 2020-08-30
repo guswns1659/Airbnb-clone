@@ -15,4 +15,10 @@ public class Member extends Account{
     public Member(String email) {
         super(email);
     }
+
+    public static Member of(String email) {
+        return Member.builder()
+                .email(email)
+                .build();
+    }
 }

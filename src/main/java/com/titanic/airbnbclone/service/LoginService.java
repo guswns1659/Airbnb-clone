@@ -4,17 +4,15 @@ import com.titanic.airbnbclone.domain.account.Account;
 import com.titanic.airbnbclone.domain.account.Member;
 import com.titanic.airbnbclone.repository.AccountRepository;
 import com.titanic.airbnbclone.utils.GithubProperties;
+import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.web.dto.request.AccessTokenRequestDto;
-import com.titanic.airbnbclone.web.dto.response.GithubEmailResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
@@ -22,13 +20,16 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginService {
 
     private final GithubProperties githubProperties;
-    private WebClient webClient;
     private final AccountRepository accountRepository;
+    private final JwtService jwtService;
+    private final WebClientService webClientService;
 
-    public LoginService(GithubProperties githubProperties, AccountRepository accountRepository) {
+    public LoginService(GithubProperties githubProperties, AccountRepository accountRepository, JwtService jwtService,
+                        WebClientService webClientService) {
         this.githubProperties = githubProperties;
         this.accountRepository = accountRepository;
-        this.webClient = WebClient.create();
+        this.jwtService = jwtService;
+        this.webClientService = webClientService;
     }
 
     @Transactional
@@ -41,42 +42,19 @@ public class LoginService {
                 = AccessTokenRequestDto.of(githubProperties);
 
         try {
-
-
             // github에 accessToken 요청
-            String rawAccessToken = webClient.post()
-                    .uri(githubProperties.getAccessTokenRequestUrl())
-                    .body(Mono.just(accessTokenRequestDto), AccessTokenRequestDto.class)
-                    .exchange()
-                    .block()
-                    .bodyToMono(String.class)
-                    .block();
-
+            String rawAccessToken = webClientService.requestAccessTokenAtGithub(accessTokenRequestDto);
             String accessToken = parseRawAccessToken(rawAccessToken);
 
             // github에 유저 이메일 요청
-            GithubEmailResponseDto[] githubEmail = webClient.get()
-                    .uri(githubProperties.getEmailRequestUrl())
-                    .accept(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "token " + accessToken)
-                    .retrieve()
-                    .bodyToMono(GithubEmailResponseDto[].class)
-                    .log()
-                    .block();
-
-            String email = githubEmail[0].getEmail();
+            String email = webClientService.requestUserEmailAtGithub(accessToken);
 
             // 사용자 저장소에 persist
-            Account member = Member.builder()
-                    .email(email)
-                    .build();
-
+            Account member = Member.of(email);
             accountRepository.save(member);
 
             // 사용자 email로 jwt 토큰을 만든 뒤 쿠키로 response에 넣어서 리턴.
-
             addCookieToResponseServlet(response, email);
-
             return new ResponseEntity<>(HttpStatus.FOUND);
 
         } catch (Exception e) {
@@ -87,8 +65,15 @@ public class LoginService {
 
     private void addCookieToResponseServlet(HttpServletResponse response, String email) {
 
-//        String jwtToken = JwtUtils.jwt
+        String jwtTokenWithEmail = jwtService.createJwtTokenWithEmail(email);
+        Cookie tokenCookie = new Cookie(OauthEnum.TOKEN.getValue(), jwtTokenWithEmail);
+        Cookie userEmailCookie = new Cookie(OauthEnum.USER_EMAIL.getValue(), email);
 
+        tokenCookie.setPath("/");
+        userEmailCookie.setPath("/");
+        response.addCookie(tokenCookie);
+        response.addCookie(userEmailCookie);
+        response.setHeader(OauthEnum.HEADER_LOCATION.getValue(), "http://15.164.35.235/githublogin");
     }
 
     private String parseRawAccessToken(String rawAccessToken) {
