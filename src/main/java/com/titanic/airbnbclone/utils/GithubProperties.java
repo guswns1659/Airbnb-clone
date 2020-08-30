@@ -26,6 +26,8 @@ public class GithubProperties {
 
     private String redirectCode;
 
+    private String emailRequestUrl;
+
     public void addRedirectCode(String redirectCode) {
         this.redirectCode = redirectCode;
     }
