@@ -1,4 +1,4 @@
-package com.titanic.airbnbclone.domain;
+package com.titanic.airbnbclone.domain.accommodation;
 
 import javax.persistence.*;
 

@@ -16,3 +16,9 @@ logging:
   pattern:
     file: "%d{dd-MM-yyyy HH:mm:ss.SSS,Asia/Seoul} [%thread] %-5level %logger{36}.%M - %msg%n"
     console: "%d{dd-MM-yyyy HH:mm:ss.SSS,Asia/Seoul} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
+
+github:
+  client-id: c2e25fe082feb25b3a02
+  client-secret: 849283d9227c9d35a9a6a6f82475bcb0d42eb549
+  redirect-url: http://15.164.35.235/api/github/oauth/callback2
+  access-token-request-url: https://github.com/login/oauth/access_token
