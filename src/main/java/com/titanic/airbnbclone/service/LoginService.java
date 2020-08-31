@@ -6,6 +6,7 @@ import com.titanic.airbnbclone.repository.AccountRepository;
 import com.titanic.airbnbclone.utils.GithubProperties;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.web.dto.request.AccessTokenRequestDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class LoginService {
 
     private final GithubProperties githubProperties;
@@ -24,20 +27,10 @@ public class LoginService {
     private final JwtService jwtService;
     private final WebClientService webClientService;
 
-    public LoginService(GithubProperties githubProperties, AccountRepository accountRepository, JwtService jwtService,
-                        WebClientService webClientService) {
-        this.githubProperties = githubProperties;
-        this.accountRepository = accountRepository;
-        this.jwtService = jwtService;
-        this.webClientService = webClientService;
-    }
-
-    @Transactional
     public ResponseEntity<Void> login(String redirectCode,
                                       HttpServletResponse response) {
 
         githubProperties.addRedirectCode(redirectCode);
-
         AccessTokenRequestDto accessTokenRequestDto
                 = AccessTokenRequestDto.of(githubProperties);
 

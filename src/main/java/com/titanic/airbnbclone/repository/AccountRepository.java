@@ -1,16 +1,16 @@
 package com.titanic.airbnbclone.repository;
 
 import com.titanic.airbnbclone.domain.account.Account;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Repository
+@RequiredArgsConstructor
 public class AccountRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public void save(Account account) {
         try {

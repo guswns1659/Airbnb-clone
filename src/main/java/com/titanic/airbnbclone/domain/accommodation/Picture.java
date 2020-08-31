@@ -10,6 +10,8 @@ public class Picture {
     @Column(name = "picture_id")
     private Long id;
 
+    @Lob
+    @Column(name = "picture_url")
     private String url;
 
     @ManyToOne

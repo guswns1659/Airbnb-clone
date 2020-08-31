@@ -20,6 +20,7 @@ public abstract class Account {
     @Column(name = "account_id")
     private Long id;
 
+    @Column(name = "account_email", unique = true)
     private String email;
 
     @OneToMany(mappedBy = "account")
