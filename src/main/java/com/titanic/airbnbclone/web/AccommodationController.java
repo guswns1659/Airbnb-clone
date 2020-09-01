@@ -16,6 +16,6 @@ public class AccommodationController {
 
     @GetMapping("init")
     public AccommodationResponseDtoList getInitAccommodations() {
-        return accommodationService.getInitAccommodations();
+        return accommodationService.getInitInfo();
     }
 }

@@ -2,16 +2,16 @@ package com.titanic.airbnbclone.web.dto.response.accommodation;
 
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.accommodation.Picture;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class AccommodationResponseDto {
 
     private Long id;
@@ -25,27 +25,10 @@ public class AccommodationResponseDto {
     private Integer currentPrice;
     private Integer previousPrice;
     private String hotelRating;
-    private List<Picture> urls;
-
-    @Builder
-    public AccommodationResponseDto(Long id, String hotelName, String description, String location, String street,
-                                    Double lat, Double lng, Integer availableGuest, Integer currentPrice,
-                                    Integer previousPrice, String hotelRating, List<Picture> urls) {
-        this.id = id;
-        this.hotelName = hotelName;
-        this.description = description;
-        this.location = location;
-        this.street = street;
-        this.lat = lat;
-        this.lng = lng;
-        this.availableGuest = availableGuest;
-        this.currentPrice = currentPrice;
-        this.previousPrice = previousPrice;
-        this.hotelRating = hotelRating;
-        this.urls = urls;
-    }
+    private List<Picture> urls = new ArrayList<>();
 
     public static AccommodationResponseDto of(Accommodation accommodation) {
+        List<Picture> urls = accommodation.getPictures();
         return AccommodationResponseDto.builder()
                 .id(accommodation.getId())
                 .hotelName(accommodation.getName())
