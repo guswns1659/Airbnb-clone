@@ -1,11 +1,15 @@
 package com.titanic.airbnbclone.repository;
 
+import com.titanic.airbnbclone.domain.accommodation.Accommodation;
+import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,5 +51,16 @@ public class AccommodationRepository {
                 .getResultList();
 
         return resultList;
+    }
+
+    public List<AccommodationResponseDto> getInitAccommodation() {
+        List<Accommodation> accommodations = entityManager.createQuery("select distinct a from Accommodation as a join fetch a.pictures", Accommodation.class)
+                .setFirstResult(0)
+                .setMaxResults(30)
+                .getResultList();
+
+        return accommodations.stream()
+                .map(AccommodationResponseDto::of)
+                .collect(Collectors.toList());
     }
 }
