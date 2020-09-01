@@ -18,7 +18,7 @@ public class Picture {
     @Column(name = "picture_url")
     private String url;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
     @JsonIgnore
     private Accommodation accommodation;

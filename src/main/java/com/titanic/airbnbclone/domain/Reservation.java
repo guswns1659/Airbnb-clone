@@ -19,11 +19,11 @@ public class Reservation {
     private Integer clientCount;
     private Integer price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 }
