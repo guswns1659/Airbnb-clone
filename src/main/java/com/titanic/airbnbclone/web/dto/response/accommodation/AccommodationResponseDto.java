@@ -4,12 +4,11 @@ import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.accommodation.Picture;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class AccommodationResponseDto {
@@ -25,10 +24,9 @@ public class AccommodationResponseDto {
     private Integer currentPrice;
     private Integer previousPrice;
     private String hotelRating;
-    private List<Picture> urls = new ArrayList<>();
+    private List<Picture> urls;
 
     public static AccommodationResponseDto of(Accommodation accommodation) {
-        List<Picture> urls = accommodation.getPictures();
         return AccommodationResponseDto.builder()
                 .id(accommodation.getId())
                 .hotelName(accommodation.getName())
@@ -41,7 +39,7 @@ public class AccommodationResponseDto {
                 .lng(accommodation.getLongitude())
                 .location(accommodation.getLocation())
                 .street(accommodation.getStreet())
-                .urls(accommodation.getPictures())
+                .urls(accommodation.getPictures().subList(0,1))
                 .build();
     }
 }

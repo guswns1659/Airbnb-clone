@@ -1,21 +1,19 @@
 package com.titanic.airbnbclone.web.dto.response.accommodation;
 
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccommodationResponseDtoList {
 
     private String status;
-    private List<AccommodationResponseDto> allData;
-    private List<PriceRangeResponseDto> prices;
+    private List<AccommodationResponseDto> allData = new ArrayList<>();
+    private List<PriceRangeResponseDto> prices = new ArrayList<>();
 
     @Builder
     public AccommodationResponseDtoList(String status, List<AccommodationResponseDto> allData, List<PriceRangeResponseDto> prices) {
