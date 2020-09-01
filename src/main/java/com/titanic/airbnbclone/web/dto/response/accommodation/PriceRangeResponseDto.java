@@ -2,19 +2,16 @@ package com.titanic.airbnbclone.web.dto.response.accommodation;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import javax.validation.constraints.NegativeOrZero;
 
 @Getter
-@ToString
 @NoArgsConstructor
-public class PriceRangeResponseDto {
+public class PriceRangeResponseDto extends PriceRange {
 
-    private int total;
     private int price;
+    private int total;
 
-    public void plusTotal() {
-        this.total++;
+    public PriceRangeResponseDto(int price, int total) {
+        this.price = price;
+        this.total = total;
     }
 }
