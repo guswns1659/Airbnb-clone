@@ -163,5 +163,6 @@
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpcore:4.4.12" level="project" />
     <orderEntry type="library" name="Gradle: commons-codec:commons-codec:1.13" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.yaml:snakeyaml:1.25" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-test:5.2.2.RELEASE" level="project" />
   </component>
 </module>
