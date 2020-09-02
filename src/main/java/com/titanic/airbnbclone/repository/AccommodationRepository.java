@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -54,7 +54,9 @@ public class AccommodationRepository {
     }
 
     public List<AccommodationResponseDto> getInitAccommodation() {
-        List<Accommodation> accommodations = entityManager.createQuery("select distinct a from Accommodation as a join fetch a.pictures", Accommodation.class)
+        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures";
+        List<Accommodation> accommodations = entityManager
+                .createQuery(queryString, Accommodation.class)
                 .setFirstResult(0)
                 .setMaxResults(30)
                 .getResultList();
@@ -62,5 +64,19 @@ public class AccommodationRepository {
         return accommodations.stream()
                 .map(AccommodationResponseDto::of)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Accommodation> findOne(Long accommodationId) {
+        String queryString = "select distinct a from Accommodation as a left join fetch a.reservations where a.id = :accommodationId";
+        Accommodation findAccommodation = entityManager
+                .createQuery(queryString, Accommodation.class)
+                .setParameter("accommodationId", accommodationId)
+                .getSingleResult();
+
+        return Optional.ofNullable(findAccommodation);
+    }
+
+    public void save(Accommodation findAccommodation) {
+        entityManager.persist(findAccommodation);
     }
 }

@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        String[] excludePathPatterns = new String[]{"/github/**", "/accommodation/**"};
+        String[] excludePathPatterns = new String[]{"/github/**"};
 
         registry.addInterceptor(loginInterceptor())
                 .addPathPatterns(ALL_PATH)
