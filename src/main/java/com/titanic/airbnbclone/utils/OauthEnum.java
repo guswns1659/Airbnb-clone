@@ -11,7 +11,8 @@ public enum OauthEnum {
     OAUTH_URL_SERVER("https://github.com/login/oauth/authorize?client_id=bdd909bfff2137535182&redirect_uri=http://localhost:8080/callback&scope=user"),
     SECRET_KEY("airbnbClone"),
     TYP("typ"), TYP_VALUE("JWT"), ALG("HS256"), TOKEN("token"),
-    OPTIONS("OPTIONS");
+    OPTIONS("OPTIONS"),
+    JWT_TOKEN_EXAMPLE("eyJIUzI1NiI6IkhTMjU2IiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJBdXRob3JpemF0aW9uIjoiZ3Vzd25zMTY1OUBnbWFpbC5jb20iLCJzdWIiOiJndXN3bnMxNjU5QGdtYWlsLmNvbSIsImV4cCI6MTU5OTA4MDk2MywiaWF0IjoxNTk5MDMwODk3fQ.OxIad-XknudSA_N4YrGAtnwGWz1RRhL_iavFvtPjOOo");
 
     private String value;
 

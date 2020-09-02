@@ -1,5 +1,7 @@
 package com.titanic.airbnbclone.domain.accommodation;
 
+import com.titanic.airbnbclone.domain.Reservation;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -33,4 +35,20 @@ public class Accommodation {
 
     @OneToMany(mappedBy = "accommodation")
     private List<Picture> pictures = new ArrayList<>();
+
+    @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
+
+    public boolean isReservable(ReservationDemandDto reservationDemandDto) {
+
+        for (Reservation reservation : this.reservations) {
+            return reservation.validateReservation(reservationDemandDto);
+        }
+        return true;
+    }
+
+    public void addReservation(Reservation reservation) {
+        this.reservations.add(reservation);
+        reservation.setAccommodation(this);
+    }
 }

@@ -18,8 +18,8 @@ logging:
     console: "%d{dd-MM-yyyy HH:mm:ss.SSS,Asia/Seoul} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
 
 github:
-  client-id: c2e25fe082feb25b3a02
-  client-secret: 849283d9227c9d35a9a6a6f82475bcb0d42eb549
-  redirect-url: http://localhost:8080/github/oauth/callback2
+  client-id: 8f285a7d51cbddc39104
+  client-secret: a25c4a9fab910f206855eea684be46f0bb457d60
+  redirect-url: http://localhost:8080/github/oauth/callback
   access-token-request-url: https://github.com/login/oauth/access_token
   email-request-url: https://api.github.com/user/emails
