@@ -11,10 +11,7 @@ import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationEnum;
 import com.titanic.airbnbclone.utils.StatusEnum;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
-import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
+import com.titanic.airbnbclone.web.dto.response.accommodation.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
@@ -39,7 +36,6 @@ public class AccommodationService {
                 .build();
     }
 
-    @Transactional
     public List<PriceRangeResponseDto> classifyAccommodationPrice() {
         return accommodationRepository.classifyAccommodationPrice();
     }
@@ -48,7 +44,6 @@ public class AccommodationService {
         return accommodationRepository.getInitAccommodation();
     }
 
-    @Transactional
     public ReservationResponseDto reserve(Long accommodationId,
                                           ReservationDemandDto reservationDemandDto,
                                           HttpServletRequest request) {
@@ -81,6 +76,23 @@ public class AccommodationService {
             return ReservationResponseDto.builder()
                     .status(StatusEnum.ACCEPTED.getStatusCode())
                     .message(ReservationEnum.RESERVATION_FAIL.getMessage())
+                    .build();
+        }
+    }
+
+    public DeleteReservationResponseDto delete(Long accommodationId, Long reservationId, HttpServletRequest request) {
+        try {
+            accommodationRepository.cancelReservation(reservationId);
+
+            return DeleteReservationResponseDto.builder()
+                    .status(StatusEnum.SUCCESS.getStatusCode())
+                    .message(ReservationEnum.RESERVATION_CANCEL_SUCCESS.getMessage())
+                    .build();
+
+        } catch (Exception e) {
+            return DeleteReservationResponseDto.builder()
+                    .status(StatusEnum.ACCEPTED.getStatusCode())
+                    .message(ReservationEnum.RESERVATION_CANCEL_FAIL.getMessage())
                     .build();
         }
     }

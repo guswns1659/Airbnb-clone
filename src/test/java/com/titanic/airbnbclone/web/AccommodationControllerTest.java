@@ -4,6 +4,7 @@ import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationEnum;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
+import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -59,12 +59,12 @@ public class AccommodationControllerTest {
 
     @ParameterizedTest
     @CsvSource({"2020-09-10,2020-09-15,3,150000,1"})
-    void 예약API를_테스트한다(LocalDate startDate, LocalDate endDate, int people, int totalPrice, String accommodationId) throws Exception {
+    void 예약API를_테스트한다(LocalDate startDate, LocalDate endDate, int people, int totalPrice, long accommodationId) throws Exception {
 
         final String successStatus = "200";
 
         // given
-        String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" +Long.parseLong(accommodationId);
+        String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId;
         ReservationDemandDto reservationDemandDto = ReservationDemandDto.builder()
                 .startDate(startDate)
                 .endDate(endDate)
@@ -86,5 +86,25 @@ public class AccommodationControllerTest {
         // then
         assertThat(reservationResponseDto.getMessage()).isEqualTo(ReservationEnum.RESERVATION_SUCCESS.getMessage());
         assertThat(reservationResponseDto.getStatus()).isEqualTo(successStatus);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1,10"})
+    void 예약취소API를_테스트한다(long accommodationId, long reservationId) throws Exception {
+        // given
+        String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId + "/" + reservationId;
+
+        // when
+        DeleteReservationResponseDto deleteReservationResponseDto = webTestClient.delete()
+                .uri(requestUrl)
+                .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody(DeleteReservationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        // then
+        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationEnum.RESERVATION_CANCEL_SUCCESS.getMessage());
     }
 }

@@ -1,5 +1,6 @@
 package com.titanic.airbnbclone.repository;
 
+import com.titanic.airbnbclone.domain.Reservation;
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class AccommodationRepository {
 
     private final EntityManager entityManager;
+    private final AccountRepository accountRepository;
 
     public List<PriceRangeResponseDto> classifyAccommodationPrice() {
 
@@ -78,5 +80,9 @@ public class AccommodationRepository {
 
     public void save(Accommodation findAccommodation) {
         entityManager.persist(findAccommodation);
+    }
+
+    public void cancelReservation(Long reservationId) {
+        entityManager.remove(entityManager.find(Reservation.class, reservationId));
     }
 }
