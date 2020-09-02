@@ -39,10 +39,13 @@ public class Accommodation {
     @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 
+    // 각 숙박의 예약 객체에게 요청된 예약 날짜가 가능한지 물어보는 과정
     public boolean isReservable(ReservationDemandDto reservationDemandDto) {
-
         for (Reservation reservation : this.reservations) {
-            return reservation.validateReservation(reservationDemandDto);
+            if(reservation.validateReservation(reservationDemandDto)) {
+                continue;
+            }
+            return false;
         }
         return true;
     }
