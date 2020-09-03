@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,7 +50,7 @@ public class AccommodationService {
                                           HttpServletRequest request) {
         try {
             String userEmail = (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
-            Accommodation findAccommodation = accommodationRepository.findOne(accommodationId)
+            Accommodation findAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
                     .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
             if (!findAccommodation.isReservable(reservationDemandDto)) {
@@ -98,6 +99,35 @@ public class AccommodationService {
     }
 
     public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
-        return null;
+        try {
+            String userEmail = (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
+            Account foundAccount = accountRepository.findByEmail(userEmail);
+            List<ReservationInfoResponseDto> allData = new ArrayList<>();
+
+            for (Reservation reservation : foundAccount.getReservations()) {
+                Long accommodationId = reservation.getAccommodation().getId();
+                Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
+                        .orElseThrow(() -> new NoSuchEntityException(accommodationId));
+
+
+                ReservationInfoResponseDto reservationInfoResponseDto
+                        = ReservationInfoResponseDto.builder()
+                        .accommodationId(accommodationId)
+                        .hotelName(foundAccommodation.getName())
+                        .reservation(AccountReservationResponseDto.of(reservation))
+                        .urls(foundAccommodation.getPictures())
+                        .build();
+                allData.add(reservationInfoResponseDto);
+            }
+
+            return ReservationInfoResponseDtoList.builder()
+                    .status(StatusEnum.SUCCESS.getStatusCode())
+                    .allData(allData)
+                    .build();
+        } catch (Exception e) {
+            return ReservationInfoResponseDtoList.builder()
+                    .status(StatusEnum.ACCEPTED.getStatusCode())
+                    .build();
+        }
     }
 }

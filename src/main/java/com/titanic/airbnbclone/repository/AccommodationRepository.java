@@ -6,6 +6,8 @@ import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationRespo
 import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -67,9 +69,8 @@ public class AccommodationRepository {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Accommodation> findOne(Long accommodationId) {
-        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures " +
-                "left join fetch a.reservations where a.id = :accommodationId";
+    public Optional<Accommodation> findOneWithReservations(Long accommodationId) {
+        String queryString = "select distinct a from Accommodation as a left join fetch a.reservations where a.id = :accommodationId";
         Accommodation findAccommodation = entityManager
                 .createQuery(queryString, Accommodation.class)
                 .setParameter("accommodationId", accommodationId)
@@ -82,7 +83,18 @@ public class AccommodationRepository {
         entityManager.persist(findAccommodation);
     }
 
+    @Transactional(propagation = Propagation.NESTED)
     public void cancelReservation(Long reservationId) {
         entityManager.remove(entityManager.find(Reservation.class, reservationId));
+    }
+
+    public Optional<Accommodation> findOneWithPictures(Long accommodationId) {
+        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures where a.id = :accommodationId";
+        Accommodation findAccommodation = entityManager
+                .createQuery(queryString, Accommodation.class)
+                .setParameter("accommodationId", accommodationId)
+                .getSingleResult();
+
+        return Optional.ofNullable(findAccommodation);
     }
 }
