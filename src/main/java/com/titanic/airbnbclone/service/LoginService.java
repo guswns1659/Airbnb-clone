@@ -59,6 +59,7 @@ public class LoginService {
     private void addCookieToResponseServlet(HttpServletResponse response, String email) {
 
         String jwtTokenWithEmail = jwtService.createJwtTokenWithEmail(email);
+        log.info("jwtToken : {}", jwtTokenWithEmail);
         Cookie tokenCookie = new Cookie(OauthEnum.TOKEN.getValue(), jwtTokenWithEmail);
         Cookie userEmailCookie = new Cookie(OauthEnum.USER_EMAIL.getValue(), email);
 
