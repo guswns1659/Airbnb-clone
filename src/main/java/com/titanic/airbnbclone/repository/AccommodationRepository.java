@@ -59,9 +59,8 @@ public class AccommodationRepository {
         String queryString = "select distinct a from Accommodation as a left join fetch a.pictures";
         List<Accommodation> accommodations = entityManager
                 .createQuery(queryString, Accommodation.class)
-                .setFirstResult(0)
-                .setMaxResults(30)
                 .getResultList();
+        accommodations = accommodations.subList(0, 30);
 
         return accommodations.stream()
                 .map(AccommodationResponseDto::of)
@@ -69,7 +68,8 @@ public class AccommodationRepository {
     }
 
     public Optional<Accommodation> findOne(Long accommodationId) {
-        String queryString = "select distinct a from Accommodation as a left join fetch a.reservations where a.id = :accommodationId";
+        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures " +
+                "left join fetch a.reservations where a.id = :accommodationId";
         Accommodation findAccommodation = entityManager
                 .createQuery(queryString, Accommodation.class)
                 .setParameter("accommodationId", accommodationId)
