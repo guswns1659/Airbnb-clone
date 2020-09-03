@@ -12,7 +12,7 @@ public enum OauthEnum {
     SECRET_KEY("airbnbClone"),
     TYP("typ"), TYP_VALUE("JWT"), ALG("HS256"), TOKEN("token"),
     OPTIONS("OPTIONS"),
-    JWT_TOKEN_EXAMPLE("eyJIUzI1NiI6IkhTMjU2IiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJBdXRob3JpemF0aW9uIjoiZ3Vzd25zMTY1OUBnbWFpbC5jb20iLCJzdWIiOiJndXN3bnMxNjU5QGdtYWlsLmNvbSIsImV4cCI6MTU5OTA4MDk2MywiaWF0IjoxNTk5MDMwODk3fQ.OxIad-XknudSA_N4YrGAtnwGWz1RRhL_iavFvtPjOOo");
+    JWT_TOKEN_EXAMPLE("eyJIUzI1NiI6IkhTMjU2IiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJBdXRob3JpemF0aW9uIjoiZ3Vzd25zMTY1OUBnbWFpbC5jb20iLCJzdWIiOiJndXN3bnMxNjU5QGdtYWlsLmNvbSIsImV4cCI6MTU5OTk2ODExMywiaWF0IjoxNTk5MTA0MTEzfQ.s3WGbolbFqjOXGZ45PBsNKZvIixkfLcrDuASpStOwfw");
 
     private String value;
 

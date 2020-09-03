@@ -13,8 +13,7 @@ import java.util.Map;
 public class JwtService {
 
     private final SignatureAlgorithm SIGNATUREALGORITHM = SignatureAlgorithm.HS256;
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 100;
-
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 10;
 
     public String createJwtTokenWithEmail(String email) {
         Map<String, Object> header = new HashMap<>();
