@@ -8,7 +8,7 @@ import com.titanic.airbnbclone.exception.NoSuchEntityException;
 import com.titanic.airbnbclone.repository.AccommodationRepository;
 import com.titanic.airbnbclone.repository.AccountRepository;
 import com.titanic.airbnbclone.utils.OauthEnum;
-import com.titanic.airbnbclone.utils.ReservationEnum;
+import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.*;
@@ -54,7 +54,7 @@ public class AccommodationService {
                     .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
             if (!findAccommodation.isReservable(reservationDemandDto)) {
-                throw new AlreadyReservationException(ReservationEnum.ALREADY_RESERVABLE.getMessage());
+                throw new AlreadyReservationException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
             }
 
             Account findAccount = accountRepository.findByEmail(userEmail);
@@ -65,18 +65,18 @@ public class AccommodationService {
 
             return ReservationResponseDto.builder()
                     .status(StatusEnum.SUCCESS.getStatusCode())
-                    .message(ReservationEnum.RESERVATION_SUCCESS.getMessage())
+                    .message(ReservationMessage.RESERVATION_SUCCESS.getMessage())
                     .build();
 
         } catch (AlreadyReservationException e) {
             return ReservationResponseDto.builder()
                     .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationEnum.ALREADY_RESERVABLE.getMessage())
+                    .message(ReservationMessage.ALREADY_RESERVABLE.getMessage())
                     .build();
         } catch (Exception e) {
             return ReservationResponseDto.builder()
                     .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationEnum.RESERVATION_FAIL.getMessage())
+                    .message(ReservationMessage.RESERVATION_FAIL.getMessage())
                     .build();
         }
     }
@@ -87,28 +87,29 @@ public class AccommodationService {
 
             return DeleteReservationResponseDto.builder()
                     .status(StatusEnum.SUCCESS.getStatusCode())
-                    .message(ReservationEnum.RESERVATION_CANCEL_SUCCESS.getMessage())
+                    .message(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage())
                     .build();
 
         } catch (Exception e) {
             return DeleteReservationResponseDto.builder()
                     .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationEnum.RESERVATION_CANCEL_FAIL.getMessage())
+                    .message(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage())
                     .build();
         }
     }
 
     public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
+
         try {
             String userEmail = (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
             Account foundAccount = accountRepository.findByEmail(userEmail);
             List<ReservationInfoResponseDto> allData = new ArrayList<>();
 
-            for (Reservation reservation : foundAccount.getReservations()) {
+            // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
+           for (Reservation reservation : foundAccount.getReservations()) {
                 Long accommodationId = reservation.getAccommodation().getId();
                 Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
                         .orElseThrow(() -> new NoSuchEntityException(accommodationId));
-
 
                 ReservationInfoResponseDto reservationInfoResponseDto
                         = ReservationInfoResponseDto.builder()

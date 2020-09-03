@@ -1,7 +1,7 @@
 package com.titanic.airbnbclone.web;
 
 import com.titanic.airbnbclone.utils.OauthEnum;
-import com.titanic.airbnbclone.utils.ReservationEnum;
+import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
@@ -86,7 +86,7 @@ public class AccommodationControllerTest {
                 .getResponseBody();
 
         // then
-        assertThat(reservationResponseDto.getMessage()).isEqualTo(ReservationEnum.RESERVATION_SUCCESS.getMessage());
+        assertThat(reservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_SUCCESS.getMessage());
         assertThat(reservationResponseDto.getStatus()).isEqualTo(successStatus);
     }
 
@@ -107,7 +107,7 @@ public class AccommodationControllerTest {
                 .getResponseBody();
 
         // then
-        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationEnum.RESERVATION_CANCEL_SUCCESS.getMessage());
+        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage());
     }
 
     @ParameterizedTest
