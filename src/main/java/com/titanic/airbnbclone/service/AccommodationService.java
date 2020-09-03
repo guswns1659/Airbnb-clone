@@ -96,4 +96,8 @@ public class AccommodationService {
                     .build();
         }
     }
+
+    public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
+        return null;
+    }
 }
