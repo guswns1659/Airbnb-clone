@@ -2,6 +2,8 @@ package com.titanic.airbnbclone.web;
 
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationEnum;
+import com.titanic.airbnbclone.utils.StatusEnum;
+import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
@@ -38,7 +40,7 @@ public class AccommodationControllerTest {
 
     @ParameterizedTest
     @CsvSource({"30"})
-    void 초기_숙박데이터30개를_요청한다(int expected) throws Exception {
+    void 초기_숙박데이터30개를_요청한다(int expected) {
         // given
         String requestUrl = LOCALHOST + port + "/init";
         final String OK = "200";
@@ -60,8 +62,7 @@ public class AccommodationControllerTest {
 
     @ParameterizedTest
     @CsvSource({"2020-09-10,2020-09-15,3,150000,1"})
-    @Rollback(true)
-    void 예약API를_테스트한다(LocalDate startDate, LocalDate endDate, int people, int totalPrice, long accommodationId) throws Exception {
+    void 예약API를_테스트한다(LocalDate startDate, LocalDate endDate, int people, int totalPrice, long accommodationId) {
 
         final String successStatus = "200";
 
@@ -92,7 +93,7 @@ public class AccommodationControllerTest {
 
     @ParameterizedTest
     @CsvSource({"1,10"})
-    void 예약취소API를_테스트한다(long accommodationId, long reservationId) throws Exception {
+    void 예약취소API를_테스트한다(long accommodationId, long reservationId) {
         // given
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId + "/" + reservationId;
 
@@ -108,5 +109,24 @@ public class AccommodationControllerTest {
 
         // then
         assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationEnum.RESERVATION_CANCEL_SUCCESS.getMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"3"})
+    void 유저예약정보API를_테스트한다(int size) {
+        String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + "reservationInfo";
+
+        // when
+        ReservationInfoResponseDtoList reservationInfoResponseDtoList = webTestClient.get()
+                .uri(requestUrl)
+                .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody(ReservationInfoResponseDtoList.class)
+                .returnResult()
+                .getResponseBody();
+        // then
+        assertThat(reservationInfoResponseDtoList.getStatus()).isEqualTo(StatusEnum.SUCCESS.getStatusCode());
+        assertThat(reservationInfoResponseDtoList.getAllData().size()).isEqualTo(size);
     }
 }
