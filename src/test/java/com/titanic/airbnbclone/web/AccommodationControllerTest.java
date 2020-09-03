@@ -3,10 +3,10 @@ package com.titanic.airbnbclone.web;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationEnum;
 import com.titanic.airbnbclone.utils.StatusEnum;
-import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
+import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -112,7 +111,7 @@ public class AccommodationControllerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"3"})
+    @CsvSource({"1"})
     void 유저예약정보API를_테스트한다(int size) {
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + "reservationInfo";
 
