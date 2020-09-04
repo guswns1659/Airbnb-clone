@@ -60,7 +60,7 @@ public class AccommodationControllerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"2020-09-10,2020-09-15,3,150000,1"})
+    @CsvSource({"2020-03-10,2020-03-15,3,150000,1"})
     void 예약API를_테스트한다(LocalDate startDate, LocalDate endDate, int people, int totalPrice, long accommodationId) {
 
         final String successStatus = "200";
@@ -91,7 +91,7 @@ public class AccommodationControllerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"1,10"})
+    @CsvSource({"1,100"})
     void 예약취소API를_테스트한다(long accommodationId, long reservationId) {
         // given
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId + "/" + reservationId;

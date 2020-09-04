@@ -6,7 +6,6 @@ import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationR
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("authorization")
-@Transactional
 public class AccommodationController {
 
     private final AccommodationService accommodationService;

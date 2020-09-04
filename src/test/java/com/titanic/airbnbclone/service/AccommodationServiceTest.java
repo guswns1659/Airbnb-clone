@@ -2,7 +2,6 @@ package com.titanic.airbnbclone.service;
 
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class AccommodationServiceTest {
     void 가격분류메서드를_테스트한다(int price, int total) {
         // when
         List<PriceRangeResponseDto> priceRangeResponseDtos
-                = accommodationService.classifyAccommodationPrice();
+                = accommodationService.classifyByPrice();
 
         // then
         assertThat(priceRangeResponseDtos.get(0).getPrice()).isEqualTo(price);
