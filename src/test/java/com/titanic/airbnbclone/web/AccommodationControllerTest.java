@@ -142,13 +142,14 @@ public class AccommodationControllerTest {
                 .build();
 
         return Stream.of(
-                Arguments.of(filterRequestDto, 600)
+                Arguments.of(filterRequestDto, 92)
         );
     }
 
     @ParameterizedTest
     @MethodSource("filterRequestDto")
     void 숙박필터링API를_테스트한다(FilterRequestDto filterRequestDto, int size) {
+
         // given
         String requestUrl = LOCALHOST + port + "/filter";
 

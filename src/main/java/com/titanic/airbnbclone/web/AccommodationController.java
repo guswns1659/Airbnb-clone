@@ -1,9 +1,7 @@
 package com.titanic.airbnbclone.web;
 
 import com.titanic.airbnbclone.service.AccommodationService;
-import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
@@ -36,11 +34,5 @@ public class AccommodationController {
     @GetMapping("reservationInfo")
     public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
         return accommodationService.getReservationInfo(request);
-    }
-
-    @PostMapping("filter")
-    public AccommodationResponseDtoList getFiltered(@RequestBody FilterRequestDto filterRequestDto) {
-
-        return accommodationService.getFiltered(filterRequestDto);
     }
 }
