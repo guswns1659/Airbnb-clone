@@ -3,6 +3,7 @@ package com.titanic.airbnbclone.exception;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
 import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
+import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,12 +18,12 @@ public class ExceptionAdvice {
                 ReservationMessage.ALREADY_RESERVABLE.getMessage());
     }
 
-    @ExceptionHandler(ReservedFailException.class)
-    public ReservationResponseDto reservedFail() {
-        return ReservationResponseDto.of (
-                StatusEnum.ACCEPTED.getStatusCode(),
-                ReservationMessage.RESERVATION_FAIL.getMessage());
-    }
+//    @ExceptionHandler(ReservedFailException.class)
+//    public ReservationResponseDto reservedFail() {
+//        return ReservationResponseDto.of (
+//                StatusEnum.ACCEPTED.getStatusCode(),
+//                ReservationMessage.RESERVATION_FAIL.getMessage());
+//    }
 
     @ExceptionHandler(CancelFailException.class)
     public DeleteReservationResponseDto canceledFail() {
@@ -32,4 +33,10 @@ public class ExceptionAdvice {
                 .build();
     }
 
+//    @ExceptionHandler(GetReservedInfoFailException.class)
+//    public ReservationInfoResponseDtoList getInfoFail() {
+//            return ReservationInfoResponseDtoList.builder()
+//                    .status(StatusEnum.ACCEPTED.getStatusCode())
+//                    .build();
+//    }
 }
