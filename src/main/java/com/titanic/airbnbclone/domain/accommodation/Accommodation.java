@@ -54,4 +54,8 @@ public class Accommodation {
         }
         return true;
     }
+
+    public boolean hasReservation() {
+        return this.getReservations().size() != 0;
+    }
 }

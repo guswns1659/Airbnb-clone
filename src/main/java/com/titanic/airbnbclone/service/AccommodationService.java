@@ -112,25 +112,25 @@ import java.util.stream.Collectors;
     }
 
     public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
-        // 필터링 조건으로 찾은 숙박들
-        List<Accommodation> foundAccommodations = accountRepository.filterAccommodation(filterRequestDto);
-        // 예약이 있는 숙박들
-        List<Accommodation> reservableAccommodations = foundAccommodations.stream()
-                .filter(accommodation -> accommodation.getReservations().size() != 0)
+
+        // 1차 필터링 조건(지역, 예약인원, 예약여부)으로 찾은 숙박들
+        List<Accommodation> filteredAccommodation =
+                accountRepository.filterAccommodation(filterRequestDto)
+                .stream()
+                .filter(Accommodation::hasReservation)
                 .collect(Collectors.toList());
 
         // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
-        List<Accommodation> cannotReserved = reservableAccommodations.stream()
+        List<Accommodation> cannotReserved = filteredAccommodation.stream()
                 .filter(accommodation -> !accommodation.isReservable(filterRequestDto.getStartDate(), filterRequestDto.getEndDate()))
                 .collect(Collectors.toList());
 
-
         // 전체 숙박 중 예약 불가능한 숙박 제거하는 과정
         cannotReserved.stream()
-                .map(foundAccommodations::remove)
+                .map(filteredAccommodation::remove)
                 .collect(Collectors.toList());
 
-        List<AccommodationResponseDto> allData = foundAccommodations.stream()
+        List<AccommodationResponseDto> allData = filteredAccommodation.stream()
                 .map(AccommodationResponseDto::of)
                 .collect(Collectors.toList());
 
