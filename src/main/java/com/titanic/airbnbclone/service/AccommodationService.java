@@ -3,7 +3,7 @@ package com.titanic.airbnbclone.service;
 import com.titanic.airbnbclone.domain.Reservation;
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.account.Account;
-import com.titanic.airbnbclone.exception.GetReservedInfoFailException;
+import com.titanic.airbnbclone.exception.AlreadyReservedException;
 import com.titanic.airbnbclone.exception.NoSuchEntityException;
 import com.titanic.airbnbclone.repository.AccommodationRepository;
 import com.titanic.airbnbclone.repository.AccountRepository;
@@ -15,6 +15,7 @@ import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class AccommodationService {
+@Transactional public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
     private final AccountRepository accountRepository;
@@ -57,7 +59,9 @@ public class AccommodationService {
                 .orElseThrow(() -> new NoSuchEntityException(accommodationId));
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
 
-        foundAccommodation.isReservable(reservationDemandDto);
+        if (!foundAccommodation.isReservable(reservationDemandDto.getStartDate(), reservationDemandDto.getEndDate())) {
+            throw new AlreadyReservedException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
+        }
 
         addReservation(foundAccount, foundAccommodation, reservationDemandDto);
         return ReservationResponseDto.of(
@@ -107,6 +111,35 @@ public class AccommodationService {
                 .build();
     }
 
+    public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
+        // 필터링 조건으로 찾은 숙박들
+        List<Accommodation> foundAccommodations = accountRepository.filterAccommodation(filterRequestDto);
+        // 예약이 있는 숙박들
+        List<Accommodation> reservableAccommodations = foundAccommodations.stream()
+                .filter(accommodation -> accommodation.getReservations().size() != 0)
+                .collect(Collectors.toList());
+
+        // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
+        List<Accommodation> cannotReserved = reservableAccommodations.stream()
+                .filter(accommodation -> !accommodation.isReservable(filterRequestDto.getStartDate(), filterRequestDto.getEndDate()))
+                .collect(Collectors.toList());
+
+
+        // 전체 숙박 중 예약 불가능한 숙박 제거하는 과정
+        cannotReserved.stream()
+                .map(foundAccommodations::remove)
+                .collect(Collectors.toList());
+
+        List<AccommodationResponseDto> allData = foundAccommodations.stream()
+                .map(AccommodationResponseDto::of)
+                .collect(Collectors.toList());
+
+        return AccommodationResponseDtoList.builder()
+                .status(StatusEnum.SUCCESS.getStatusCode())
+                .allData(allData)
+                .build();
+    }
+
     // HttpServletRequest에서 유저이메일 꺼내오는 메서드
     private String getAccountEmail(HttpServletRequest request) {
         return (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
@@ -119,9 +152,5 @@ public class AccommodationService {
         findAccommodation.addReservation(savedReservation);
         accountRepository.save(findAccount);
         accommodationRepository.save(findAccommodation);
-    }
-
-    public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
-        return null;
     }
 }

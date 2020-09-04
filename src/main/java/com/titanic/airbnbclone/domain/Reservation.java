@@ -49,9 +49,7 @@ public class Reservation {
                 .build();
     }
 
-    public boolean validateReservation(ReservationDemandDto reservationDemandDto) {
-        LocalDate requestStart = reservationDemandDto.getStartDate();
-        LocalDate requestEnd = reservationDemandDto.getEndDate();
+    public boolean validateReservation(LocalDate requestStart, LocalDate requestEnd) {
 
         // 기존 예약 날짜가 신규 예약 날짜 중간에 있는 경우
         if (newReserveContainOldReserve(requestStart, requestEnd)) {
