@@ -1,6 +1,8 @@
 package com.titanic.airbnbclone.domain.accommodation;
 
 import com.titanic.airbnbclone.domain.Reservation;
+import com.titanic.airbnbclone.exception.AlreadyReservedException;
+import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import lombok.Getter;
 
@@ -40,14 +42,13 @@ public class Accommodation {
     private List<Reservation> reservations = new ArrayList<>();
 
     // 각 숙박의 예약 객체에게 요청된 예약 날짜가 가능한지 물어보는 과정
-    public boolean isReservable(ReservationDemandDto reservationDemandDto) {
+    public void isReservable(ReservationDemandDto reservationDemandDto) {
         for (Reservation reservation : this.reservations) {
             if(reservation.validateReservation(reservationDemandDto)) {
                 continue;
             }
-            return false;
+            throw new AlreadyReservedException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
         }
-        return true;
     }
 
     public void addReservation(Reservation reservation) {

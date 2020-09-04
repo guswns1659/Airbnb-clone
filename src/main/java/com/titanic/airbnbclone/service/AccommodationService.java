@@ -3,10 +3,10 @@ package com.titanic.airbnbclone.service;
 import com.titanic.airbnbclone.domain.Reservation;
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.account.Account;
-import com.titanic.airbnbclone.exception.AlreadyReservationException;
 import com.titanic.airbnbclone.exception.NoSuchEntityException;
 import com.titanic.airbnbclone.repository.AccommodationRepository;
 import com.titanic.airbnbclone.repository.AccountRepository;
+import com.titanic.airbnbclone.repository.ReservationRepository;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
@@ -28,19 +28,21 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
     private final AccountRepository accountRepository;
+    private final ReservationRepository reservationRepository;
 
     public AccommodationResponseDtoList getInitInfo() {
         return AccommodationResponseDtoList.builder()
                 .allData(getInitAccommodation())
-                .prices(classifyAccommodationPrice())
+                .prices(classifyByPrice())
                 .status(String.valueOf(HttpStatus.SC_OK))
                 .build();
     }
 
-    public List<PriceRangeResponseDto> classifyAccommodationPrice() {
+    public List<PriceRangeResponseDto> classifyByPrice() {
         return accommodationRepository.classifyAccommodationPrice();
     }
 
+    @Transactional(readOnly = true)
     public List<AccommodationResponseDto> getInitAccommodation() {
         return accommodationRepository.getInitAccommodation();
     }
@@ -48,65 +50,41 @@ public class AccommodationService {
     public ReservationResponseDto reserve(Long accommodationId,
                                           ReservationDemandDto reservationDemandDto,
                                           HttpServletRequest request) {
-        try {
-            String userEmail = (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
-            Accommodation findAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
-                    .orElseThrow(() -> new NoSuchEntityException(accommodationId));
+        Accommodation foundAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
+                .orElseThrow(() -> new NoSuchEntityException(accommodationId));
+        Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
 
-            if (!findAccommodation.isReservable(reservationDemandDto)) {
-                throw new AlreadyReservationException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
-            }
+        foundAccommodation.isReservable(reservationDemandDto);
 
-            Account findAccount = accountRepository.findByEmail(userEmail);
-            Reservation savedReservation = findAccount.addReservation(reservationDemandDto);
-            findAccommodation.addReservation(savedReservation);
-            accountRepository.save(findAccount);
-            accommodationRepository.save(findAccommodation);
-
-            return ReservationResponseDto.builder()
-                    .status(StatusEnum.SUCCESS.getStatusCode())
-                    .message(ReservationMessage.RESERVATION_SUCCESS.getMessage())
-                    .build();
-
-        } catch (AlreadyReservationException e) {
-            return ReservationResponseDto.builder()
-                    .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationMessage.ALREADY_RESERVABLE.getMessage())
-                    .build();
-        } catch (Exception e) {
-            return ReservationResponseDto.builder()
-                    .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationMessage.RESERVATION_FAIL.getMessage())
-                    .build();
-        }
+        addReservation(foundAccount, foundAccommodation, reservationDemandDto);
+        return ReservationResponseDto.of(
+                StatusEnum.SUCCESS.getStatusCode(),
+                ReservationMessage.RESERVATION_SUCCESS.getMessage());
     }
 
     public DeleteReservationResponseDto delete(Long accommodationId, Long reservationId, HttpServletRequest request) {
-        try {
-            accommodationRepository.cancelReservation(reservationId);
+        /*
+         * 해당 reservation이 있는 지 파악한다. 없다면 CancelFailException 에러
+         * 이유 : DB에 없는 reservationId를 삭제하려면 전체 롤백이 동작하는데 그러면 500에러가 발생.
+         *       에러 처리가 불가능한 상황이라 reservationId가 있는지 확인하는 로직 추가
+         */
+        reservationRepository.isExisted(reservationId);
 
-            return DeleteReservationResponseDto.builder()
-                    .status(StatusEnum.SUCCESS.getStatusCode())
-                    .message(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage())
-                    .build();
-
-        } catch (Exception e) {
-            return DeleteReservationResponseDto.builder()
-                    .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .message(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage())
-                    .build();
-        }
+        accommodationRepository.cancelReservation(reservationId);
+        return DeleteReservationResponseDto.builder()
+                .status(StatusEnum.SUCCESS.getStatusCode())
+                .message(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage())
+                .build();
     }
 
     public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
 
         try {
-            String userEmail = (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
-            Account foundAccount = accountRepository.findByEmail(userEmail);
+            Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
             List<ReservationInfoResponseDto> allData = new ArrayList<>();
 
             // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
-           for (Reservation reservation : foundAccount.getReservations()) {
+            for (Reservation reservation : foundAccount.getReservations()) {
                 Long accommodationId = reservation.getAccommodation().getId();
                 Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
                         .orElseThrow(() -> new NoSuchEntityException(accommodationId));
@@ -130,5 +108,19 @@ public class AccommodationService {
                     .status(StatusEnum.ACCEPTED.getStatusCode())
                     .build();
         }
+    }
+
+    // HttpServletRequest에서 유저이메일 꺼내오는 메서드
+    private String getAccountEmail(HttpServletRequest request) {
+        return (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
+    }
+
+    private void addReservation(Account findAccount,
+                                Accommodation findAccommodation,
+                                ReservationDemandDto reservationDemandDto) {
+        Reservation savedReservation = findAccount.addReservation(reservationDemandDto);
+        findAccommodation.addReservation(savedReservation);
+        accountRepository.save(findAccount);
+        accommodationRepository.save(findAccommodation);
     }
 }
