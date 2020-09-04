@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="15.164.35.235" id="b72d90f8-4c14-485d-a30a-2b030ba7961e" keyPath="$USER_HOME$/Downloads/airbnbProject/airbnb07.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+    </configs>
+  </component>
+</project>
