@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: dev
     include: aws
 
 # logging 설정
@@ -20,6 +20,6 @@ logging:
 github:
   client-id: 8f285a7d51cbddc39104
   client-secret: a25c4a9fab910f206855eea684be46f0bb457d60
-  redirect-url: http://localhost:8080/github/oauth/callback
+  redirect-url: http://15.164.35.235/api/github/oauth/callback
   access-token-request-url: https://github.com/login/oauth/access_token
   email-request-url: https://api.github.com/user/emails

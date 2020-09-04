@@ -1,4 +1,4 @@
-SET GLOBAL local_infile = 1;
+-- SET GLOBAL local_infile = 1;
 
 LOAD DATA LOCAL INFILE '/home/jack/Downloads/airbnbProject/airbnbPicture.csv'
     INTO TABLE airbnb.picture FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
