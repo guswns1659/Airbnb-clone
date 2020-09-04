@@ -3,6 +3,7 @@ package com.titanic.airbnbclone.service;
 import com.titanic.airbnbclone.domain.Reservation;
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.account.Account;
+import com.titanic.airbnbclone.exception.GetReservedInfoFailException;
 import com.titanic.airbnbclone.exception.NoSuchEntityException;
 import com.titanic.airbnbclone.repository.AccommodationRepository;
 import com.titanic.airbnbclone.repository.AccountRepository;
@@ -50,6 +51,7 @@ public class AccommodationService {
     public ReservationResponseDto reserve(Long accommodationId,
                                           ReservationDemandDto reservationDemandDto,
                                           HttpServletRequest request) {
+
         Accommodation foundAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
                 .orElseThrow(() -> new NoSuchEntityException(accommodationId));
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
@@ -79,35 +81,29 @@ public class AccommodationService {
 
     public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
 
-        try {
-            Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
-            List<ReservationInfoResponseDto> allData = new ArrayList<>();
+        Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
+        List<ReservationInfoResponseDto> allData = new ArrayList<>();
 
-            // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
-            for (Reservation reservation : foundAccount.getReservations()) {
-                Long accommodationId = reservation.getAccommodation().getId();
-                Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
-                        .orElseThrow(() -> new NoSuchEntityException(accommodationId));
+        // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
+        for (Reservation reservation : foundAccount.getReservations()) {
+            Long accommodationId = reservation.getAccommodation().getId();
+            Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
+                    .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
-                ReservationInfoResponseDto reservationInfoResponseDto
-                        = ReservationInfoResponseDto.builder()
-                        .accommodationId(accommodationId)
-                        .hotelName(foundAccommodation.getName())
-                        .reservation(AccountReservationResponseDto.of(reservation))
-                        .urls(foundAccommodation.getPictures())
-                        .build();
-                allData.add(reservationInfoResponseDto);
-            }
-
-            return ReservationInfoResponseDtoList.builder()
-                    .status(StatusEnum.SUCCESS.getStatusCode())
-                    .allData(allData)
+            ReservationInfoResponseDto reservationInfoResponseDto
+                    = ReservationInfoResponseDto.builder()
+                    .accommodationId(accommodationId)
+                    .hotelName(foundAccommodation.getName())
+                    .reservation(AccountReservationResponseDto.of(reservation))
+                    .urls(foundAccommodation.getPictures())
                     .build();
-        } catch (Exception e) {
-            return ReservationInfoResponseDtoList.builder()
-                    .status(StatusEnum.ACCEPTED.getStatusCode())
-                    .build();
+            allData.add(reservationInfoResponseDto);
         }
+
+        return ReservationInfoResponseDtoList.builder()
+                .status(StatusEnum.SUCCESS.getStatusCode())
+                .allData(allData)
+                .build();
     }
 
     // HttpServletRequest에서 유저이메일 꺼내오는 메서드
