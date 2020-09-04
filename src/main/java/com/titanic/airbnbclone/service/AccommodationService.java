@@ -11,6 +11,7 @@ import com.titanic.airbnbclone.repository.ReservationRepository;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.*;
 import lombok.RequiredArgsConstructor;
@@ -118,5 +119,9 @@ public class AccommodationService {
         findAccommodation.addReservation(savedReservation);
         accountRepository.save(findAccount);
         accommodationRepository.save(findAccommodation);
+    }
+
+    public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
+        return null;
     }
 }
