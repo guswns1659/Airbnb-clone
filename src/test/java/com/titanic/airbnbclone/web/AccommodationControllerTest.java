@@ -3,13 +3,16 @@ package com.titanic.airbnbclone.web;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
 import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
 import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -127,5 +131,39 @@ public class AccommodationControllerTest {
         // then
         assertThat(reservationInfoResponseDtoList.getStatus()).isEqualTo(StatusEnum.SUCCESS.getStatusCode());
         assertThat(reservationInfoResponseDtoList.getAllData().size()).isEqualTo(size);
+    }
+
+    public static Stream<Arguments> filterRequestDto() {
+        FilterRequestDto filterRequestDto = FilterRequestDto.builder()
+                .location("Seattle")
+                .startDate(LocalDate.of(2020, 3, 10))
+                .endDate(LocalDate.of(2020, 3, 15))
+                .people(3)
+                .build();
+
+        return Stream.of(
+                Arguments.of(filterRequestDto, 600)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("filterRequestDto")
+    void 숙박필터링API를_테스트한다(FilterRequestDto filterRequestDto, int size) {
+        // given
+        String requestUrl = LOCALHOST + port + "/filter";
+
+        // when
+        AccommodationResponseDtoList accommodationResponseDtoList = webTestClient.post()
+                .uri(requestUrl)
+                .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
+                .body(Mono.just(filterRequestDto), FilterRequestDto.class)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody(AccommodationResponseDtoList.class)
+                .returnResult()
+                .getResponseBody();
+
+        // then
+        assertThat(accommodationResponseDtoList.getAllData().size()).isEqualTo(size);
     }
 }
