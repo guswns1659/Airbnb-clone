@@ -62,7 +62,9 @@ public class AccommodationRepository {
         List<Accommodation> accommodations = entityManager
                 .createQuery(queryString, Accommodation.class)
                 .getResultList();
-        accommodations = accommodations.subList(0, 30);
+        int startIndex = 0;
+        int accommodationCount = 30;
+        accommodations = accommodations.subList(startIndex, accommodationCount);
 
         return accommodations.stream()
                 .map(AccommodationResponseDto::of)
@@ -83,7 +85,6 @@ public class AccommodationRepository {
         entityManager.persist(findAccommodation);
     }
 
-    @Transactional(propagation = Propagation.NESTED)
     public void cancelReservation(Long reservationId) {
         entityManager.remove(entityManager.find(Reservation.class, reservationId));
     }

@@ -15,4 +15,11 @@ public class ReservationResponseDto {
         this.status = status;
         this.message = message;
     }
+
+    public static ReservationResponseDto of(String status, String message) {
+        return ReservationResponseDto.builder()
+                .status(status)
+                .message(message)
+                .build();
+    }
 }
