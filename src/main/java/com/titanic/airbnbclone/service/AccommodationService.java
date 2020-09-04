@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
     private final AccountRepository accountRepository;
     private final ReservationRepository reservationRepository;
 
-    public AccommodationResponseDtoList getInitInfo() {
-        return AccommodationResponseDtoList.builder()
+    public InitAccommodationResponseDtoList getInitInfo() {
+        return InitAccommodationResponseDtoList.builder()
                 .allData(getInitAccommodation())
                 .prices(classifyByPrice())
                 .status(String.valueOf(HttpStatus.SC_OK))
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
     }
 
     @Transactional(readOnly = true)
-    public List<AccommodationResponseDto> getInitAccommodation() {
+    public List<InitAccommodationResponseDto> getInitAccommodation() {
         return accommodationRepository.getInitAccommodation();
     }
 
@@ -113,15 +113,16 @@ import java.util.stream.Collectors;
 
     public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
 
-        // 1차 필터링 조건(지역, 예약인원, 예약여부)으로 찾은 숙박들
-        List<Accommodation> filteredAccommodation =
-                accountRepository.filterAccommodation(filterRequestDto)
-                .stream()
+        // 1차 필터링 조건(지역, 예약인원)으로 찾은 숙박들
+        List<Accommodation> filteredAccommodation = accountRepository.filterAccommodation(filterRequestDto);
+
+        // 1차 필터링된 숙박 중 예약있는 숙박
+        List<Accommodation> reservedAccommodations = filteredAccommodation .stream()
                 .filter(Accommodation::hasReservation)
                 .collect(Collectors.toList());
 
         // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
-        List<Accommodation> cannotReserved = filteredAccommodation.stream()
+        List<Accommodation> cannotReserved = reservedAccommodations.stream()
                 .filter(accommodation -> !accommodation.isReservable(filterRequestDto.getStartDate(), filterRequestDto.getEndDate()))
                 .collect(Collectors.toList());
 

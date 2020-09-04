@@ -136,13 +136,13 @@ public class AccommodationControllerTest {
     public static Stream<Arguments> filterRequestDto() {
         FilterRequestDto filterRequestDto = FilterRequestDto.builder()
                 .location("Seattle")
-                .startDate(LocalDate.of(2020, 3, 10))
-                .endDate(LocalDate.of(2020, 3, 15))
+                .startDate(LocalDate.of(2020, 8, 1))
+                .endDate(LocalDate.of(2020, 8, 31))
                 .people(3)
                 .build();
 
         return Stream.of(
-                Arguments.of(filterRequestDto, 92)
+                Arguments.of(filterRequestDto, 93)
         );
     }
 
