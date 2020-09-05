@@ -1,6 +1,6 @@
 package com.titanic.airbnbclone.service;
 
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDto;
+import com.titanic.airbnbclone.web.dto.response.accommodation.InitAccommodationResponseDto;
 import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,7 +33,7 @@ public class AccommodationServiceTest {
     @CsvSource("30")
     void 숙박30개데이터를_요청한다(int size) {
         // when
-        List<AccommodationResponseDto> accommodationResponseDtos =
+        List<InitAccommodationResponseDto> accommodationResponseDtos =
                 accommodationService.getInitAccommodation();
         // then
         assertThat(accommodationResponseDtos.size()).isEqualTo(size);

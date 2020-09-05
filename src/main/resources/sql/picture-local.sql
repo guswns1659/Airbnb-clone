@@ -1,6 +1,6 @@
--- SET GLOBAL local_infile = 1;
+SET GLOBAL local_infile = 1;
 
-LOAD DATA LOCAL INFILE '/home/jack/Downloads/airbnbProject/airbnbPicture.csv'
+LOAD DATA LOCAL INFILE '/home/jack/Repository/java/Airbnb-clone/src/main/resources/airbnbPicture.csv'
     INTO TABLE airbnb.picture FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
     (@var1, @var2, @var3)
     SET
