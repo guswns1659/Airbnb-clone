@@ -2,13 +2,13 @@ spring:
   profiles: dev
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://rds-anglehack.cutixbfyzqqm.ap-northeast-2.rds.amazonaws.com:3306/airbnb?allowLoadLocalInfile=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    url: jdbc:mysql://airbnb-07.csjhbz8c8oyh.ap-northeast-2.rds.amazonaws.com:3306/airbnb?allowLoadLocalInfile=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useLegacyDatetimeCode=false
     username: jack
     password: airbnb0707
     initialization-mode: always
     hikari:
       maximum-pool-size: 10
-    data: classpath:sql/accommodation.sql, classpath:sql/picture.sql
+    data: classpath:sql/schema.sql, classpath:sql/accommodation-dev.sql, classpath:sql/picture-dev.sql
   jpa:
     properties:
       hibernate:
@@ -18,7 +18,7 @@ spring:
         non_contextual_creation: true
     hibernate:
       use-new-id-generator-mappings: false
-      ddl-auto: create # 테이블 생성 후에는 vaildate로 바꾸기
+      ddl-auto: update # 테이블 생성 후에는 vaildate로 바꾸기
     database: mysql
     database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
   servlet:
