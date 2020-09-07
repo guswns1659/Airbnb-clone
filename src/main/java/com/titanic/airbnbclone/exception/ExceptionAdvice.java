@@ -18,13 +18,6 @@ public class ExceptionAdvice {
                 ReservationMessage.ALREADY_RESERVABLE.getMessage());
     }
 
-//    @ExceptionHandler(ReservedFailException.class)
-//    public ReservationResponseDto reservedFail() {
-//        return ReservationResponseDto.of (
-//                StatusEnum.ACCEPTED.getStatusCode(),
-//                ReservationMessage.RESERVATION_FAIL.getMessage());
-//    }
-
     @ExceptionHandler(CancelFailException.class)
     public DeleteReservationResponseDto canceledFail() {
         return DeleteReservationResponseDto.builder()
@@ -32,11 +25,4 @@ public class ExceptionAdvice {
                 .message(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage())
                 .build();
     }
-
-//    @ExceptionHandler(GetReservedInfoFailException.class)
-//    public ReservationInfoResponseDtoList getInfoFail() {
-//            return ReservationInfoResponseDtoList.builder()
-//                    .status(StatusEnum.ACCEPTED.getStatusCode())
-//                    .build();
-//    }
 }

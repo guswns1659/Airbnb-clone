@@ -1,4 +1,4 @@
-SET GLOBAL local_infile = 1;
+-- SET GLOBAL local_infile = 1;
 
 LOAD DATA LOCAL INFILE '/home/ubuntu/Airbnb-clone/src/main/resources/airbnbAccommodation.csv'
     INTO TABLE airbnb.accommodation FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
