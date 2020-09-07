@@ -111,11 +111,11 @@ public class AccommodationControllerTest {
                 .getResponseBody();
 
         // then
-        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage());
+        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage());
     }
 
     @ParameterizedTest
-    @CsvSource({"3"})
+    @CsvSource({"0"})
     void 유저예약정보API를_테스트한다(int size) {
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + "reservationInfo";
 

@@ -18,7 +18,7 @@ public class AccommodationServiceTest {
     private AccommodationService accommodationService;
 
     @ParameterizedTest
-    @CsvSource({"10000,85"})
+    @CsvSource({"10000,92"})
     void 가격분류메서드를_테스트한다(int price, int total) {
         // when
         List<PriceRangeResponseDto> priceRangeResponseDtos

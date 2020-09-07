@@ -18,7 +18,7 @@ spring:
         non_contextual_creation: true
     hibernate:
       use-new-id-generator-mappings: false
-      ddl-auto: update # 테이블 생성 후에는 vaildate로 바꾸기
+      ddl-auto: validate # 테이블 생성 후에는 vaildate로 바꾸기
     database: mysql
     database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
   servlet:
