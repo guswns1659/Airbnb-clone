@@ -11,6 +11,23 @@
 
 - [데모영상](https://youtu.be/iLq8LginsKU)
 
+<details markdown="1">
+<summary>서비스 사진</summary>
+
+- 메인 화면
+<img src="https://user-images.githubusercontent.com/55608425/92931726-daac4100-f47e-11ea-81de-5f7e7b483ee2.png" width=400>
+
+- 검색 결과 화면
+<img src="https://user-images.githubusercontent.com/55608425/92931717-d849e700-f47e-11ea-8940-6f71ad78bc69.png" width=400> 
+
+- 예약 화면
+<img src="https://user-images.githubusercontent.com/55608425/92931732-dd0e9b00-f47e-11ea-9933-b81a5dbd9b7d.png" width=400>
+
+- 예약 내역 화면
+<img src="https://user-images.githubusercontent.com/55608425/92931729-dc760480-f47e-11ea-8472-7ee3e972922b.png" width=400>
+
+</details>
+
 ## 프로젝트 지향점 
 
 OOP(객체지향프로그래밍), TDD(테스트주도개발), 클린코드 
