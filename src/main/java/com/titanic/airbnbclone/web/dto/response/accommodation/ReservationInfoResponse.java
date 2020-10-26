@@ -1,5 +1,7 @@
 package com.titanic.airbnbclone.web.dto.response.accommodation;
 
+import com.titanic.airbnbclone.domain.Reservation;
+import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.accommodation.Picture;
 import lombok.*;
 
@@ -22,5 +24,14 @@ public class ReservationInfoResponse {
         this.hotelName = hotelName;
         this.urls = urls;
         this.reservation = reservation;
+    }
+
+    public static ReservationInfoResponse from(Long accommodationId, Accommodation foundAccommodation, Reservation reservation) {
+        return ReservationInfoResponse.builder()
+                .accommodationId(accommodationId)
+                .hotelName(foundAccommodation.getName())
+                .reservation(AccountReservationResponse.of(reservation))
+                .urls(foundAccommodation.getPictures())
+                .build();
     }
 }

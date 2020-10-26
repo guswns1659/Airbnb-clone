@@ -28,7 +28,6 @@ public class WebClientService {
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.TOKEN.getValue() + " " + accessToken)
                 .retrieve()
                 .bodyToMono(GithubEmailResponse[].class)
-                .log()
                 .block();
 
         return githubEmail[0].getEmail();

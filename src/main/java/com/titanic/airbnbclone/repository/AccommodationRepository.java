@@ -34,8 +34,21 @@ public class AccommodationRepository {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Accommodation> findById(Long accommodationId) {
+    /** 예약정보와 숙박을 가져오는 쿼리
+     *  아래 쿼리와 구분한 이유는 join fetch는 두 개의 N엔티티에는 사용할 수 없기 때문이다.
+     */
+    public Optional<Accommodation> findByIdWithReservation(Long accommodationId) {
         String queryString = "select distinct a from Accommodation as a left join fetch a.reservations where a.id = :accommodationId";
+        Accommodation findAccommodation = entityManager
+                .createQuery(queryString, Accommodation.class)
+                .setParameter("accommodationId", accommodationId)
+                .getSingleResult();
+
+        return Optional.ofNullable(findAccommodation);
+    }
+
+    public Optional<Accommodation> findByIdWithPicture(Long accommodationId) {
+        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures where a.id = :accommodationId";
         Accommodation findAccommodation = entityManager
                 .createQuery(queryString, Accommodation.class)
                 .setParameter("accommodationId", accommodationId)
@@ -50,16 +63,6 @@ public class AccommodationRepository {
 
     public void cancelReservation(Long reservationId) {
         entityManager.remove(entityManager.find(Reservation.class, reservationId));
-    }
-
-    public Optional<Accommodation> findOneWithPictures(Long accommodationId) {
-        String queryString = "select distinct a from Accommodation as a left join fetch a.pictures where a.id = :accommodationId";
-        Accommodation findAccommodation = entityManager
-                .createQuery(queryString, Accommodation.class)
-                .setParameter("accommodationId", accommodationId)
-                .getSingleResult();
-
-        return Optional.ofNullable(findAccommodation);
     }
 
     /** 요금 분포 그래프를 보여주기 위해 사용함.

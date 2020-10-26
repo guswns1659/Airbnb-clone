@@ -93,7 +93,7 @@ import java.util.stream.Collectors;
                                        HttpServletRequest request) {
 
         // 해당 id로 숙박 조회, 없을 경우 해당 숙박이 없다 에러 핸들링
-        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
+        Accommodation foundAccommodation = accommodationRepository.findByIdWithReservation(accommodationId)
                 .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
@@ -109,7 +109,7 @@ import java.util.stream.Collectors;
                 ReservationMessage.RESERVATION_SUCCESS.getMessage());
     }
 
-    public DeleteReservationResponse delete(Long accommodationId, Long reservationId, HttpServletRequest request) {
+    public DeleteReservationResponse delete(Long reservationId) {
         /*
          * 해당 reservation이 있는 지 파악한다. 없다면 CancelFailException 에러
          * 이유 : DB에 없는 reservationId를 삭제하려면 전체 롤백이 동작하는데 그러면 500에러가 발생.
@@ -124,6 +124,8 @@ import java.util.stream.Collectors;
                 .build();
     }
 
+    /** 사용자의 예약 내역 조회
+     */
     public ReservationInfoResponseList getReservationInfo(HttpServletRequest request) {
 
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
@@ -132,16 +134,11 @@ import java.util.stream.Collectors;
         // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
         for (Reservation reservation : foundAccount.getReservations()) {
             Long accommodationId = reservation.getAccommodation().getId();
-            Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
+            Accommodation foundAccommodation = accommodationRepository.findByIdWithPicture(accommodationId)
                     .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
             ReservationInfoResponse reservationInfoResponse
-                    = ReservationInfoResponse.builder()
-                    .accommodationId(accommodationId)
-                    .hotelName(foundAccommodation.getName())
-                    .reservation(AccountReservationResponse.of(reservation))
-                    .urls(foundAccommodation.getPictures())
-                    .build();
+                    = ReservationInfoResponse.from(accommodationId, foundAccommodation, reservation);
             allData.add(reservationInfoResponse);
         }
 
@@ -156,6 +153,9 @@ import java.util.stream.Collectors;
         return (String) request.getAttribute(OauthEnum.USER_EMAIL.getValue());
     }
 
+    /** N:M 관계 매핑
+     *  Account에 저장된 Reservation을 Accommodation에 저장해야 한다.
+     */
     private void addReservation(Account findAccount,
                                 Accommodation findAccommodation,
                                 ReservationRequest reservationRequest) {
