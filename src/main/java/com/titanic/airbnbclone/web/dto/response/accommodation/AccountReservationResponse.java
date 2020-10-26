@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AccountReservationResponseDto {
+public class AccountReservationResponse {
 
     private Long id;
 
@@ -20,8 +20,8 @@ public class AccountReservationResponseDto {
     private Integer totalPrice;
 
     @Builder
-    public AccountReservationResponseDto(Long id, LocalDate startDate, LocalDate endDate,
-                                         Integer people, Integer totalPrice) {
+    public AccountReservationResponse(Long id, LocalDate startDate, LocalDate endDate,
+                                      Integer people, Integer totalPrice) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -29,8 +29,8 @@ public class AccountReservationResponseDto {
         this.totalPrice = totalPrice;
     }
 
-    public static AccountReservationResponseDto of(Reservation reservation) {
-        return AccountReservationResponseDto.builder()
+    public static AccountReservationResponse of(Reservation reservation) {
+        return AccountReservationResponse.builder()
                 .id(reservation.getId())
                 .startDate(reservation.getStartDate())
                 .endDate(reservation.getEndDate())

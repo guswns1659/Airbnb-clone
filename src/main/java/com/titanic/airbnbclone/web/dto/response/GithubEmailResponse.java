@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class GithubEmailResponseDto {
+public class GithubEmailResponse {
 
     private String email;
     private String primary;

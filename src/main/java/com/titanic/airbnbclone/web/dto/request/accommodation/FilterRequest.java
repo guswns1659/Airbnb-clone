@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FilterRequestDto {
+public class FilterRequest {
 
     private String location;
     private LocalDate startDate;
@@ -19,7 +19,7 @@ public class FilterRequestDto {
     private Integer max;
 
     @Builder
-    public FilterRequestDto(String location, LocalDate startDate, LocalDate endDate, Integer people, Integer min, Integer max) {
+    public FilterRequest(String location, LocalDate startDate, LocalDate endDate, Integer people, Integer min, Integer max) {
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;

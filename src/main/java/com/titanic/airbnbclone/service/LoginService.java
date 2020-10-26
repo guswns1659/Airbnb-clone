@@ -5,7 +5,7 @@ import com.titanic.airbnbclone.domain.account.Member;
 import com.titanic.airbnbclone.repository.AccountRepository;
 import com.titanic.airbnbclone.utils.GithubProperties;
 import com.titanic.airbnbclone.utils.OauthEnum;
-import com.titanic.airbnbclone.web.dto.request.AccessTokenRequestDto;
+import com.titanic.airbnbclone.web.dto.request.AccessTokenRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,12 +31,12 @@ public class LoginService {
                                       HttpServletResponse response) {
 
         githubProperties.addRedirectCode(redirectCode);
-        AccessTokenRequestDto accessTokenRequestDto
-                = AccessTokenRequestDto.of(githubProperties);
+        AccessTokenRequest accessTokenRequest
+                = AccessTokenRequest.of(githubProperties);
 
         try {
             // github에 accessToken 요청
-            String rawAccessToken = webClientService.requestAccessTokenAtGithub(accessTokenRequestDto);
+            String rawAccessToken = webClientService.requestAccessTokenAtGithub(accessTokenRequest);
             String accessToken = parseRawAccessToken(rawAccessToken);
 
             // github에 유저 이메일 요청

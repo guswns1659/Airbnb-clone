@@ -1,7 +1,7 @@
 package com.titanic.airbnbclone.domain.account;
 
 import com.titanic.airbnbclone.domain.Reservation;
-import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,5 +31,5 @@ public abstract class Account {
         this.email = email;
     }
 
-    public abstract Reservation addReservation(ReservationDemandDto reservationDemandDto);
+    public abstract Reservation addReservation(ReservationRequest reservationRequest);
 }

@@ -8,16 +8,16 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReservationInfoResponseDto {
+public class ReservationInfoResponse {
 
     private Long accommodationId;
     private String hotelName;
     private List<Picture> urls;
-    private AccountReservationResponseDto reservation;
+    private AccountReservationResponse reservation;
 
     @Builder
-    public ReservationInfoResponseDto(Long accommodationId, String hotelName, List<Picture> urls,
-                                      AccountReservationResponseDto reservation) {
+    public ReservationInfoResponse(Long accommodationId, String hotelName, List<Picture> urls,
+                                   AccountReservationResponse reservation) {
         this.accommodationId = accommodationId;
         this.hotelName = hotelName;
         this.urls = urls;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class AccessTokenRequestDto {
+public class AccessTokenRequest {
 
     @JsonProperty(value = "client_id")
     private String clientId;
@@ -23,15 +23,15 @@ public class AccessTokenRequestDto {
     private String redirectUrl;
 
     @Builder
-    public AccessTokenRequestDto(String clientId, String clientSecret, String code, String redirectUrl) {
+    public AccessTokenRequest(String clientId, String clientSecret, String code, String redirectUrl) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.code = code;
         this.redirectUrl = redirectUrl;
     }
 
-    public static AccessTokenRequestDto of(GithubProperties githubProperties) {
-        return AccessTokenRequestDto.builder()
+    public static AccessTokenRequest of(GithubProperties githubProperties) {
+        return AccessTokenRequest.builder()
                 .clientId(githubProperties.getClientId())
                 .clientSecret(githubProperties.getClientSecret())
                 .code(githubProperties.getRedirectCode())

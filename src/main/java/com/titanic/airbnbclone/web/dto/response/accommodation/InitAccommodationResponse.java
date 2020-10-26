@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class InitAccommodationResponseDto {
+public class InitAccommodationResponse {
 
     private Long id;
     private String hotelName;
@@ -26,8 +26,8 @@ public class InitAccommodationResponseDto {
     private String hotelRating;
     private List<Picture> urls;
 
-    public static InitAccommodationResponseDto of(Accommodation accommodation) {
-        return InitAccommodationResponseDto.builder()
+    public static InitAccommodationResponse of(Accommodation accommodation) {
+        return InitAccommodationResponse.builder()
                 .id(accommodation.getId())
                 .hotelName(accommodation.getName())
                 .availableGuest(accommodation.getAvailableGuestCount())

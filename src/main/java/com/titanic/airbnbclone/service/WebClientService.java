@@ -2,8 +2,8 @@ package com.titanic.airbnbclone.service;
 
 import com.titanic.airbnbclone.utils.GithubProperties;
 import com.titanic.airbnbclone.utils.OauthEnum;
-import com.titanic.airbnbclone.web.dto.request.AccessTokenRequestDto;
-import com.titanic.airbnbclone.web.dto.response.GithubEmailResponseDto;
+import com.titanic.airbnbclone.web.dto.request.AccessTokenRequest;
+import com.titanic.airbnbclone.web.dto.response.GithubEmailResponse;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,22 +22,22 @@ public class WebClientService {
 
     public String requestUserEmailAtGithub(String accessToken) {
 
-        GithubEmailResponseDto[] githubEmail = webClient.get()
+        GithubEmailResponse[] githubEmail = webClient.get()
                 .uri(githubProperties.getEmailRequestUrl())
                 .accept(MediaType.APPLICATION_JSON)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.TOKEN.getValue() + " " + accessToken)
                 .retrieve()
-                .bodyToMono(GithubEmailResponseDto[].class)
+                .bodyToMono(GithubEmailResponse[].class)
                 .log()
                 .block();
 
         return githubEmail[0].getEmail();
     }
 
-    public String requestAccessTokenAtGithub(AccessTokenRequestDto accessTokenRequestDto) {
+    public String requestAccessTokenAtGithub(AccessTokenRequest accessTokenRequest) {
         return webClient.post()
                 .uri(githubProperties.getAccessTokenRequestUrl())
-                .body(Mono.just(accessTokenRequestDto), AccessTokenRequestDto.class)
+                .body(Mono.just(accessTokenRequest), AccessTokenRequest.class)
                 .exchange()
                 .block()
                 .bodyToMono(String.class)

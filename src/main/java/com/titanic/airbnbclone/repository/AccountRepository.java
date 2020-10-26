@@ -2,7 +2,7 @@ package com.titanic.airbnbclone.repository;
 
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.account.Account;
-import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -29,23 +29,23 @@ public class AccountRepository {
                 .getSingleResult();
     }
 
-    public List<Accommodation> filterAccommodation(FilterRequestDto filterRequestDto) {
-        if (filterRequestDto.getMin() == null) {
+    public List<Accommodation> filterAccommodation(FilterRequest filterRequest) {
+        if (filterRequest.getMin() == null) {
             return entityManager.createQuery("select distinct a from Accommodation a left join fetch a.reservations " +
                     "where a.location = :location " +
                     "and a.availableGuestCount >= :availableGuestCount", Accommodation.class)
-                    .setParameter("location", filterRequestDto.getLocation())
-                    .setParameter("availableGuestCount", filterRequestDto.getPeople())
+                    .setParameter("location", filterRequest.getLocation())
+                    .setParameter("availableGuestCount", filterRequest.getPeople())
                     .getResultList();
         } else {
             return entityManager.createQuery("select distinct a from Accommodation a left join fetch a.reservations " +
                     "where a.location = :location " +
                     "and a.availableGuestCount >= :availableGuestCount " +
                     "and a.currentPrice between :min and :max", Accommodation.class)
-                    .setParameter("location", filterRequestDto.getLocation())
-                    .setParameter("availableGuestCount", filterRequestDto.getPeople())
-                    .setParameter("min", filterRequestDto.getMin())
-                    .setParameter("max", filterRequestDto.getMax())
+                    .setParameter("location", filterRequest.getLocation())
+                    .setParameter("availableGuestCount", filterRequest.getPeople())
+                    .setParameter("min", filterRequest.getMin())
+                    .setParameter("max", filterRequest.getMax())
                     .getResultList();
         }
     }

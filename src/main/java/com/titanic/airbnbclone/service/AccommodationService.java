@@ -11,8 +11,8 @@ import com.titanic.airbnbclone.repository.ReservationRepository;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
-import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
-import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequest;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationRequest;
 import com.titanic.airbnbclone.web.dto.response.accommodation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,42 +34,46 @@ import java.util.stream.Collectors;
     private final AccountRepository accountRepository;
     private final ReservationRepository reservationRepository;
 
-    public InitAccommodationResponseDtoList getInitInfo() {
-        return InitAccommodationResponseDtoList.builder()
+    public InitAccommodationResponseList getInitInfo() {
+        return InitAccommodationResponseList.builder()
                 .allData(getInitAccommodation())
                 .prices(classifyByPrice())
                 .status(String.valueOf(HttpStatus.SC_OK))
                 .build();
     }
 
-    public List<PriceRangeResponseDto> classifyByPrice() {
+    public List<PriceRangeResponse> classifyByPrice() {
         return accommodationRepository.classifyAccommodationPrice();
     }
 
     @Transactional(readOnly = true)
-    public List<InitAccommodationResponseDto> getInitAccommodation() {
+    public List<InitAccommodationResponse> getInitAccommodation() {
         return accommodationRepository.getInitAccommodation();
     }
 
-    public ReservationResponseDto reserve(Long accommodationId,
-                                          ReservationDemandDto reservationDemandDto,
-                                          HttpServletRequest request) {
+    /** 예약로직
+     *
+     */
+    public ReservationResponse reserve(Long accommodationId,
+                                       ReservationRequest reservationRequest,
+                                       HttpServletRequest request) {
 
         Accommodation foundAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
                 .orElseThrow(() -> new NoSuchEntityException(accommodationId));
+
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
 
-        if (!foundAccommodation.isReservable(reservationDemandDto.getStartDate(), reservationDemandDto.getEndDate())) {
+        if (!foundAccommodation.isReservable(reservationRequest.getStartDate(), reservationRequest.getEndDate())) {
             throw new AlreadyReservedException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
         }
 
-        addReservation(foundAccount, foundAccommodation, reservationDemandDto);
-        return ReservationResponseDto.of(
+        addReservation(foundAccount, foundAccommodation, reservationRequest);
+        return ReservationResponse.of(
                 StatusEnum.SUCCESS.getStatusCode(),
                 ReservationMessage.RESERVATION_SUCCESS.getMessage());
     }
 
-    public DeleteReservationResponseDto delete(Long accommodationId, Long reservationId, HttpServletRequest request) {
+    public DeleteReservationResponse delete(Long accommodationId, Long reservationId, HttpServletRequest request) {
         /*
          * 해당 reservation이 있는 지 파악한다. 없다면 CancelFailException 에러
          * 이유 : DB에 없는 reservationId를 삭제하려면 전체 롤백이 동작하는데 그러면 500에러가 발생.
@@ -78,16 +82,16 @@ import java.util.stream.Collectors;
         reservationRepository.isExisted(reservationId);
 
         accommodationRepository.cancelReservation(reservationId);
-        return DeleteReservationResponseDto.builder()
+        return DeleteReservationResponse.builder()
                 .status(StatusEnum.SUCCESS.getStatusCode())
                 .message(ReservationMessage.RESERVATION_CANCEL_SUCCESS.getMessage())
                 .build();
     }
 
-    public ReservationInfoResponseDtoList getReservationInfo(HttpServletRequest request) {
+    public ReservationInfoResponseList getReservationInfo(HttpServletRequest request) {
 
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
-        List<ReservationInfoResponseDto> allData = new ArrayList<>();
+        List<ReservationInfoResponse> allData = new ArrayList<>();
 
         // 현재 로그인된 사용자의 예약 내역을 확인해 DTO로 만드는 과정
         for (Reservation reservation : foundAccount.getReservations()) {
@@ -95,26 +99,26 @@ import java.util.stream.Collectors;
             Accommodation foundAccommodation = accommodationRepository.findOneWithPictures(accommodationId)
                     .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
-            ReservationInfoResponseDto reservationInfoResponseDto
-                    = ReservationInfoResponseDto.builder()
+            ReservationInfoResponse reservationInfoResponse
+                    = ReservationInfoResponse.builder()
                     .accommodationId(accommodationId)
                     .hotelName(foundAccommodation.getName())
-                    .reservation(AccountReservationResponseDto.of(reservation))
+                    .reservation(AccountReservationResponse.of(reservation))
                     .urls(foundAccommodation.getPictures())
                     .build();
-            allData.add(reservationInfoResponseDto);
+            allData.add(reservationInfoResponse);
         }
 
-        return ReservationInfoResponseDtoList.builder()
+        return ReservationInfoResponseList.builder()
                 .status(StatusEnum.SUCCESS.getStatusCode())
                 .allData(allData)
                 .build();
     }
 
-    public AccommodationResponseDtoList getFiltered(FilterRequestDto filterRequestDto) {
+    public AccommodationResponseList getFiltered(FilterRequest filterRequest) {
 
         // 1차 필터링 조건(지역, 예약인원)으로 찾은 숙박들
-        List<Accommodation> filteredAccommodation = accountRepository.filterAccommodation(filterRequestDto);
+        List<Accommodation> filteredAccommodation = accountRepository.filterAccommodation(filterRequest);
 
         // 1차 필터링된 숙박 중 예약있는 숙박
         List<Accommodation> reservedAccommodations = filteredAccommodation .stream()
@@ -123,7 +127,7 @@ import java.util.stream.Collectors;
 
         // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
         List<Accommodation> cannotReserved = reservedAccommodations.stream()
-                .filter(accommodation -> !accommodation.isReservable(filterRequestDto.getStartDate(), filterRequestDto.getEndDate()))
+                .filter(accommodation -> !accommodation.isReservable(filterRequest.getStartDate(), filterRequest.getEndDate()))
                 .collect(Collectors.toList());
 
         // 전체 숙박 중 예약 불가능한 숙박 제거하는 과정
@@ -131,11 +135,11 @@ import java.util.stream.Collectors;
                 .map(filteredAccommodation::remove)
                 .collect(Collectors.toList());
 
-        List<AccommodationResponseDto> allData = filteredAccommodation.stream()
-                .map(AccommodationResponseDto::of)
+        List<AccommodationResponse> allData = filteredAccommodation.stream()
+                .map(AccommodationResponse::of)
                 .collect(Collectors.toList());
 
-        return AccommodationResponseDtoList.builder()
+        return AccommodationResponseList.builder()
                 .status(StatusEnum.SUCCESS.getStatusCode())
                 .allData(allData)
                 .build();
@@ -148,8 +152,8 @@ import java.util.stream.Collectors;
 
     private void addReservation(Account findAccount,
                                 Accommodation findAccommodation,
-                                ReservationDemandDto reservationDemandDto) {
-        Reservation savedReservation = findAccount.addReservation(reservationDemandDto);
+                                ReservationRequest reservationRequest) {
+        Reservation savedReservation = findAccount.addReservation(reservationRequest);
         findAccommodation.addReservation(savedReservation);
         accountRepository.save(findAccount);
         accommodationRepository.save(findAccommodation);

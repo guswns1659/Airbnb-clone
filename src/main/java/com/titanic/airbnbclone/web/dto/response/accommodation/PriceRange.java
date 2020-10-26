@@ -7,7 +7,7 @@ import javax.persistence.SqlResultSetMapping;
 
 @MappedSuperclass
 @SqlResultSetMapping(name = "priceRangeResponseDto",
-        classes = {@ConstructorResult(targetClass = PriceRangeResponseDto.class,
+        classes = {@ConstructorResult(targetClass = PriceRangeResponse.class,
                 columns = {@ColumnResult(name = "price", type = Integer.class),
                         @ColumnResult(name = "total", type = Integer.class)})
         })

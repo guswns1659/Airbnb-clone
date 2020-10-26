@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationDemandDto {
+public class ReservationRequest {
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -15,7 +15,7 @@ public class ReservationDemandDto {
     private Integer totalPrice;
 
     @Builder
-    public ReservationDemandDto(LocalDate startDate, LocalDate endDate, Integer people, Integer totalPrice) {
+    public ReservationRequest(LocalDate startDate, LocalDate endDate, Integer people, Integer totalPrice) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.people = people;

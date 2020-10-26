@@ -1,9 +1,9 @@
 package com.titanic.airbnbclone.web;
 
 import com.titanic.airbnbclone.service.AccommodationService;
-import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
-import com.titanic.airbnbclone.web.dto.response.accommodation.InitAccommodationResponseDtoList;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequest;
+import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseList;
+import com.titanic.airbnbclone.web.dto.response.accommodation.InitAccommodationResponseList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +17,12 @@ public class SearchController {
     private final AccommodationService accommodationService;
 
     @GetMapping("init")
-    public InitAccommodationResponseDtoList getInitAccommodations() {
+    public InitAccommodationResponseList getInitAccommodations() {
         return accommodationService.getInitInfo();
     }
 
     @PostMapping("filter")
-    public AccommodationResponseDtoList getFiltered(@RequestBody FilterRequestDto filterRequestDto) {
-        return accommodationService.getFiltered(filterRequestDto);
+    public AccommodationResponseList getFiltered(@RequestBody FilterRequest filterRequest) {
+        return accommodationService.getFiltered(filterRequest);
     }
 }

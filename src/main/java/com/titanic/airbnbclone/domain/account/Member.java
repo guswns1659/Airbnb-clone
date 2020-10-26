@@ -1,7 +1,7 @@
 package com.titanic.airbnbclone.domain.account;
 
 import com.titanic.airbnbclone.domain.Reservation;
-import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationRequest;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -19,8 +19,8 @@ public class Member extends Account{
     }
 
     @Override
-    public Reservation addReservation(ReservationDemandDto reservationDemandDto) {
-        Reservation reservation = Reservation.of(reservationDemandDto);
+    public Reservation addReservation(ReservationRequest reservationRequest) {
+        Reservation reservation = Reservation.of(reservationRequest);
         this.getReservations().add(reservation);
         reservation.setAccount(this);
         return reservation;

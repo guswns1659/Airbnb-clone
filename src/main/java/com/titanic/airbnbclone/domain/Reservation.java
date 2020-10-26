@@ -2,7 +2,7 @@ package com.titanic.airbnbclone.domain;
 
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
 import com.titanic.airbnbclone.domain.account.Account;
-import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationRequest;
 import lombok.*;
 
 import javax.persistence.*;
@@ -40,12 +40,12 @@ public class Reservation {
         this.price = price;
     }
 
-    public static Reservation of(ReservationDemandDto reservationDemandDto) {
+    public static Reservation of(ReservationRequest reservationRequest) {
         return Reservation.builder()
-                .startDate(reservationDemandDto.getStartDate())
-                .endDate(reservationDemandDto.getEndDate())
-                .clientCount(reservationDemandDto.getPeople())
-                .price(reservationDemandDto.getTotalPrice())
+                .startDate(reservationRequest.getStartDate())
+                .endDate(reservationRequest.getEndDate())
+                .clientCount(reservationRequest.getPeople())
+                .price(reservationRequest.getTotalPrice())
                 .build();
     }
 

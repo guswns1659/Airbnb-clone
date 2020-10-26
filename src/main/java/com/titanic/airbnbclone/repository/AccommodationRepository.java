@@ -2,8 +2,8 @@ package com.titanic.airbnbclone.repository;
 
 import com.titanic.airbnbclone.domain.Reservation;
 import com.titanic.airbnbclone.domain.accommodation.Accommodation;
-import com.titanic.airbnbclone.web.dto.response.accommodation.InitAccommodationResponseDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponseDto;
+import com.titanic.airbnbclone.web.dto.response.accommodation.InitAccommodationResponse;
+import com.titanic.airbnbclone.web.dto.response.accommodation.PriceRangeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +19,7 @@ public class AccommodationRepository {
     private final EntityManager entityManager;
     private final AccountRepository accountRepository;
 
-    public List<InitAccommodationResponseDto> getInitAccommodation() {
+    public List<InitAccommodationResponse> getInitAccommodation() {
         String queryString = "select distinct a from Accommodation as a left join fetch a.pictures";
         List<Accommodation> accommodations = entityManager
                 .createQuery(queryString, Accommodation.class)
@@ -29,7 +29,7 @@ public class AccommodationRepository {
         accommodations = accommodations.subList(startIndex, accommodationCount);
 
         return accommodations.stream()
-                .map(InitAccommodationResponseDto::of)
+                .map(InitAccommodationResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +61,7 @@ public class AccommodationRepository {
         return Optional.ofNullable(findAccommodation);
     }
 
-    public List<PriceRangeResponseDto> classifyAccommodationPrice() {
+    public List<PriceRangeResponse> classifyAccommodationPrice() {
 
         String sqlString = "select price, count(*) as total from (\n" +
                 "select current_price,\n" +
@@ -91,7 +91,7 @@ public class AccommodationRepository {
                 "accommodation group by price order by price;";
 
         @SuppressWarnings("unchecked")
-        List<PriceRangeResponseDto> resultList = entityManager.createNativeQuery(sqlString, "priceRangeResponseDto")
+        List<PriceRangeResponse> resultList = entityManager.createNativeQuery(sqlString, "priceRangeResponseDto")
                 .getResultList();
 
         return resultList;

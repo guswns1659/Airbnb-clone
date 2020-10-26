@@ -7,13 +7,13 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationInfoResponseDtoList {
+public class ReservationInfoResponseList {
 
     private String status;
-    private List<ReservationInfoResponseDto> allData;
+    private List<ReservationInfoResponse> allData;
 
     @Builder
-    public ReservationInfoResponseDtoList(String status, List<ReservationInfoResponseDto> allData) {
+    public ReservationInfoResponseList(String status, List<ReservationInfoResponse> allData) {
         this.status = status;
         this.allData = allData;
     }

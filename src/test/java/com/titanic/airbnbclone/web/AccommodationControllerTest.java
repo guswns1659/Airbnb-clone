@@ -3,12 +3,12 @@ package com.titanic.airbnbclone.web;
 import com.titanic.airbnbclone.utils.OauthEnum;
 import com.titanic.airbnbclone.utils.ReservationMessage;
 import com.titanic.airbnbclone.utils.StatusEnum;
-import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequestDto;
-import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationDemandDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseDtoList;
-import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponseDto;
-import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseDtoList;
-import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponseDto;
+import com.titanic.airbnbclone.web.dto.request.accommodation.FilterRequest;
+import com.titanic.airbnbclone.web.dto.request.accommodation.ReservationRequest;
+import com.titanic.airbnbclone.web.dto.response.accommodation.AccommodationResponseList;
+import com.titanic.airbnbclone.web.dto.response.accommodation.DeleteReservationResponse;
+import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationInfoResponseList;
+import com.titanic.airbnbclone.web.dto.response.accommodation.ReservationResponse;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -49,12 +49,12 @@ public class AccommodationControllerTest {
         final String OK = "200";
 
         // when
-        AccommodationResponseDtoList responseDto = webTestClient.get()
+        AccommodationResponseList responseDto = webTestClient.get()
                 .uri(requestUrl)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.OK)
-                .expectBody(AccommodationResponseDtoList.class)
+                .expectBody(AccommodationResponseList.class)
                 .returnResult()
                 .getResponseBody();
 
@@ -71,7 +71,7 @@ public class AccommodationControllerTest {
 
         // given
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId;
-        ReservationDemandDto reservationDemandDto = ReservationDemandDto.builder()
+        ReservationRequest reservationRequest = ReservationRequest.builder()
                 .startDate(startDate)
                 .endDate(endDate)
                 .people(people)
@@ -79,19 +79,19 @@ public class AccommodationControllerTest {
                 .build();
 
         // when
-        ReservationResponseDto reservationResponseDto = webTestClient.post()
+        ReservationResponse reservationResponse = webTestClient.post()
                 .uri(requestUrl)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
-                .body(Mono.just(reservationDemandDto), ReservationDemandDto.class)
+                .body(Mono.just(reservationRequest), ReservationRequest.class)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.OK)
-                .expectBody(ReservationResponseDto.class)
+                .expectBody(ReservationResponse.class)
                 .returnResult()
                 .getResponseBody();
 
         // then
-        assertThat(reservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_SUCCESS.getMessage());
-        assertThat(reservationResponseDto.getStatus()).isEqualTo(successStatus);
+        assertThat(reservationResponse.getMessage()).isEqualTo(ReservationMessage.RESERVATION_SUCCESS.getMessage());
+        assertThat(reservationResponse.getStatus()).isEqualTo(successStatus);
     }
 
     @ParameterizedTest
@@ -101,17 +101,17 @@ public class AccommodationControllerTest {
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + accommodationId + "/" + reservationId;
 
         // when
-        DeleteReservationResponseDto deleteReservationResponseDto = webTestClient.delete()
+        DeleteReservationResponse deleteReservationResponse = webTestClient.delete()
                 .uri(requestUrl)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.OK)
-                .expectBody(DeleteReservationResponseDto.class)
+                .expectBody(DeleteReservationResponse.class)
                 .returnResult()
                 .getResponseBody();
 
         // then
-        assertThat(deleteReservationResponseDto.getMessage()).isEqualTo(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage());
+        assertThat(deleteReservationResponse.getMessage()).isEqualTo(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage());
     }
 
     @ParameterizedTest
@@ -120,21 +120,21 @@ public class AccommodationControllerTest {
         String requestUrl = LOCALHOST + port + REQUEST_MAPPING + "/" + "reservationInfo";
 
         // when
-        ReservationInfoResponseDtoList reservationInfoResponseDtoList = webTestClient.get()
+        ReservationInfoResponseList reservationInfoResponseList = webTestClient.get()
                 .uri(requestUrl)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.OK)
-                .expectBody(ReservationInfoResponseDtoList.class)
+                .expectBody(ReservationInfoResponseList.class)
                 .returnResult()
                 .getResponseBody();
         // then
-        assertThat(reservationInfoResponseDtoList.getStatus()).isEqualTo(StatusEnum.SUCCESS.getStatusCode());
-        assertThat(reservationInfoResponseDtoList.getAllData().size()).isEqualTo(size);
+        assertThat(reservationInfoResponseList.getStatus()).isEqualTo(StatusEnum.SUCCESS.getStatusCode());
+        assertThat(reservationInfoResponseList.getAllData().size()).isEqualTo(size);
     }
 
     public static Stream<Arguments> filterRequestDto() {
-        FilterRequestDto filterRequestDto = FilterRequestDto.builder()
+        FilterRequest filterRequest = FilterRequest.builder()
                 .location("Seattle")
                 .startDate(LocalDate.of(2020, 8, 1))
                 .endDate(LocalDate.of(2020, 8, 31))
@@ -142,29 +142,29 @@ public class AccommodationControllerTest {
                 .build();
 
         return Stream.of(
-                Arguments.of(filterRequestDto, 93)
+                Arguments.of(filterRequest, 93)
         );
     }
 
     @ParameterizedTest
     @MethodSource("filterRequestDto")
-    void 숙박필터링API를_테스트한다(FilterRequestDto filterRequestDto, int size) {
+    void 숙박필터링API를_테스트한다(FilterRequest filterRequest, int size) {
 
         // given
         String requestUrl = LOCALHOST + port + "/filter";
 
         // when
-        AccommodationResponseDtoList accommodationResponseDtoList = webTestClient.post()
+        AccommodationResponseList accommodationResponseList = webTestClient.post()
                 .uri(requestUrl)
                 .header(OauthEnum.AUTHORIZATION.getValue(), OauthEnum.JWT_TOKEN_EXAMPLE.getValue())
-                .body(Mono.just(filterRequestDto), FilterRequestDto.class)
+                .body(Mono.just(filterRequest), FilterRequest.class)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.OK)
-                .expectBody(AccommodationResponseDtoList.class)
+                .expectBody(AccommodationResponseList.class)
                 .returnResult()
                 .getResponseBody();
 
         // then
-        assertThat(accommodationResponseDtoList.getAllData().size()).isEqualTo(size);
+        assertThat(accommodationResponseList.getAllData().size()).isEqualTo(size);
     }
 }
