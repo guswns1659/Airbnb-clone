@@ -10,6 +10,7 @@
 # 데모 영상 및 서비스 사진 
 
 - [데모영상](https://youtu.be/iLq8LginsKU)
+- [서비스URL](http://15.164.35.235/)
 
 <details markdown="1">
 <summary>서비스 사진</summary>
