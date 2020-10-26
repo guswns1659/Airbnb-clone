@@ -17,8 +17,9 @@ import java.util.stream.Collectors;
 public class AccommodationRepository {
 
     private final EntityManager entityManager;
-    private final AccountRepository accountRepository;
 
+    /** 페이징을 직접한 이유 : 1 : N관계에서 1을 조회할 때 join fetch 사용하고 페이징 처리를 하면 메모리에서 처리하기에 위험
+     */
     public List<InitAccommodationResponse> getInitAccommodation() {
         String queryString = "select distinct a from Accommodation as a left join fetch a.pictures";
         List<Accommodation> accommodations = entityManager
@@ -33,7 +34,7 @@ public class AccommodationRepository {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Accommodation> findOneWithReservations(Long accommodationId) {
+    public Optional<Accommodation> findById(Long accommodationId) {
         String queryString = "select distinct a from Accommodation as a left join fetch a.reservations where a.id = :accommodationId";
         Accommodation findAccommodation = entityManager
                 .createQuery(queryString, Accommodation.class)
@@ -61,6 +62,10 @@ public class AccommodationRepository {
         return Optional.ofNullable(findAccommodation);
     }
 
+    /** 요금 분포 그래프를 보여주기 위해 사용함.
+     *  각 가격 범위별 가격을 지정하기 위해 case - when - then 사용.
+     *  ex) 45000원 -> 10000원
+     */
     public List<PriceRangeResponse> classifyAccommodationPrice() {
 
         String sqlString = "select price, count(*) as total from (\n" +
@@ -90,6 +95,8 @@ public class AccommodationRepository {
                 "from accommodation)\n" +
                 "accommodation group by price order by price;";
 
+        // native 쿼리 결과를 바로 DTO 클래스에 매핑하기 위한 설정
+        // 컴파일러에게 경고를 보내지 말라고 역할 : 검증되지 않는 연산자 관련 경고 억제
         @SuppressWarnings("unchecked")
         List<PriceRangeResponse> resultList = entityManager.createNativeQuery(sqlString, "priceRangeResponseDto")
                 .getResultList();

@@ -24,4 +24,12 @@ public class ExceptionAdvice {
                 .message(ReservationMessage.RESERVATION_CANCEL_FAIL.getMessage())
                 .build();
     }
+
+    @ExceptionHandler(NoSuchEntityException.class)
+    public ReservationResponse NoSuchEntity() {
+        return ReservationResponse.builder()
+                .status(StatusEnum.ACCEPTED.getStatusCode())
+                .message(new NoSuchEntityException().getMessage())
+                .build();
+    }
 }

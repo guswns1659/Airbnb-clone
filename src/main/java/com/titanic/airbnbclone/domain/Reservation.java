@@ -49,6 +49,9 @@ public class Reservation {
                 .build();
     }
 
+    /** 신규 예약날짜가 기존 예약날짜와 겹치는지 확인하는 메서드
+     *  3가지 조건
+     */
     public boolean validateReservation(LocalDate requestStart, LocalDate requestEnd) {
 
         // 기존 예약 날짜가 신규 예약 날짜 중간에 있는 경우

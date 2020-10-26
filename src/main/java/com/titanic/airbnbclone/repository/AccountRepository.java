@@ -29,6 +29,10 @@ public class AccountRepository {
                 .getSingleResult();
     }
 
+    /** 동적쿼리를 위한 분기
+     *  숙박 검색 시 요금 필드를 옵션이기 때문에 분기처리를 해줬다.
+     *  QueryDsl에 대한 지식이 부족해 사용하지 못한 점 아쉬움.
+     */
     public List<Accommodation> filterAccommodation(FilterRequest filterRequest) {
         if (filterRequest.getMin() == null) {
             return entityManager.createQuery("select distinct a from Accommodation a left join fetch a.reservations " +

@@ -42,27 +42,63 @@ import java.util.stream.Collectors;
                 .build();
     }
 
-    public List<PriceRangeResponse> classifyByPrice() {
-        return accommodationRepository.classifyAccommodationPrice();
-    }
-
     @Transactional(readOnly = true)
     public List<InitAccommodationResponse> getInitAccommodation() {
         return accommodationRepository.getInitAccommodation();
     }
 
+    public List<PriceRangeResponse> classifyByPrice() {
+        return accommodationRepository.classifyAccommodationPrice();
+    }
+
+    /** 지역, 날짜, 인원 기준으로 필터링하는 메서드
+     *  필터링 순서 : 지역, 예약인원 -> 예약 유무 -> 예약있는 숙박 중 겹치는 숙박 제거
+     */
+    public AccommodationResponseList getFiltered(FilterRequest filterRequest) {
+
+        // 1차 필터링 조건(지역, 예약인원)으로 찾은 숙박들
+        List<Accommodation> filteredAccommodation = accountRepository.filterAccommodation(filterRequest);
+
+        // 1차 필터링된 숙박 중 예약있는 숙박
+        List<Accommodation> reservedAccommodations = filteredAccommodation.stream()
+                .filter(Accommodation::hasReservation)
+                .collect(Collectors.toList());
+
+        // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
+        List<Accommodation> cannotReserved = reservedAccommodations.stream()
+                .filter(accommodation -> !accommodation.isReservable(filterRequest.getStartDate(), filterRequest.getEndDate()))
+                .collect(Collectors.toList());
+
+        // 전체 숙박 중 예약 불가능한 숙박 제거하는 과정
+        // 예약이 있더라도 현재 날짜와 겹치지 않으면 예약 가능하기 때문
+        cannotReserved.stream()
+                .map(filteredAccommodation::remove)
+                .collect(Collectors.toList());
+
+        List<AccommodationResponse> allData = filteredAccommodation.stream()
+                .map(AccommodationResponse::of)
+                .collect(Collectors.toList());
+
+        return AccommodationResponseList.builder()
+                .status(StatusEnum.SUCCESS.getStatusCode())
+                .allData(allData)
+                .build();
+    }
+
     /** 예약로직
-     *
+     *  Account와 Accommodtaion에 Reservation 객체를 저장
      */
     public ReservationResponse reserve(Long accommodationId,
                                        ReservationRequest reservationRequest,
                                        HttpServletRequest request) {
 
-        Accommodation foundAccommodation = accommodationRepository.findOneWithReservations(accommodationId)
+        // 해당 id로 숙박 조회, 없을 경우 해당 숙박이 없다 에러 핸들링
+        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new NoSuchEntityException(accommodationId));
 
         Account foundAccount = accountRepository.findByEmail(getAccountEmail(request));
 
+        // 요청 날짜가 예약 불가능할 경우 예외 처리
         if (!foundAccommodation.isReservable(reservationRequest.getStartDate(), reservationRequest.getEndDate())) {
             throw new AlreadyReservedException(ReservationMessage.ALREADY_RESERVABLE.getMessage());
         }
@@ -110,36 +146,6 @@ import java.util.stream.Collectors;
         }
 
         return ReservationInfoResponseList.builder()
-                .status(StatusEnum.SUCCESS.getStatusCode())
-                .allData(allData)
-                .build();
-    }
-
-    public AccommodationResponseList getFiltered(FilterRequest filterRequest) {
-
-        // 1차 필터링 조건(지역, 예약인원)으로 찾은 숙박들
-        List<Accommodation> filteredAccommodation = accountRepository.filterAccommodation(filterRequest);
-
-        // 1차 필터링된 숙박 중 예약있는 숙박
-        List<Accommodation> reservedAccommodations = filteredAccommodation .stream()
-                .filter(Accommodation::hasReservation)
-                .collect(Collectors.toList());
-
-        // 예약이 있는 숙박 중에서 요청된 날짜로 예약이 불가능한 숙박들
-        List<Accommodation> cannotReserved = reservedAccommodations.stream()
-                .filter(accommodation -> !accommodation.isReservable(filterRequest.getStartDate(), filterRequest.getEndDate()))
-                .collect(Collectors.toList());
-
-        // 전체 숙박 중 예약 불가능한 숙박 제거하는 과정
-        cannotReserved.stream()
-                .map(filteredAccommodation::remove)
-                .collect(Collectors.toList());
-
-        List<AccommodationResponse> allData = filteredAccommodation.stream()
-                .map(AccommodationResponse::of)
-                .collect(Collectors.toList());
-
-        return AccommodationResponseList.builder()
                 .status(StatusEnum.SUCCESS.getStatusCode())
                 .allData(allData)
                 .build();
